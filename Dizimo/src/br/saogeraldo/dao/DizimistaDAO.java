@@ -155,19 +155,21 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getAniversarioByDay(String dtInicio, String dtFim) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT nome, dtNascimento FROM dizimista where SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
+		String sql = "SELECT idDizimista, nome, dtNascimento, telefone FROM dizimista where SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);	
 		DizimistaVO dz = null;		
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){		
-			dz = new DizimistaVO();			
-			dz.setNome(rs.getString("nome"));			
+			dz = new DizimistaVO();	
+			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setNome(rs.getString("nome"));	
+			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtNascimento(rs.getDate("dtNascimento"));			
 			lista.add(dz);
 		}
-		return lista;		
+		return lista;
 	}
 	/**
 	 * Consulta todos os Aniversariantes de Casamento
