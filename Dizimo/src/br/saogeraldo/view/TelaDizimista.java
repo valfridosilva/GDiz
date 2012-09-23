@@ -5,31 +5,44 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
+import java.beans.PropertyVetoException;
 import java.sql.SQLException;
 import java.text.ParseException;
+import java.util.Date;
+import java.util.List;
 
 import javax.swing.BorderFactory;
+import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
 import javax.swing.text.MaskFormatter;
 
+import org.apache.log4j.Logger;
+
 import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.dao.DizimistaDAO;
-import br.saogeraldo.util.Data;
+import br.saogeraldo.util.DataUtil;
+import br.saogeraldo.util.JButtonEnter;
+import br.saogeraldo.util.Mensagem;
+import br.saogeraldo.util.ValidacaoException;
 
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
 
-public class TelaDizimista extends JFrame {
+public class TelaDizimista extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
+	private JButton botaoPesquisarPorNome;
+	private JButton botaoPesquisarPorCodigo;
 	private JButton botaoSalvar;
-	private JButton botaoLimpar;  
+	private JButton botaoAlterar;
+	private JButton botaoExcluir;
+	private JButton botaoLimpar;
 	private JLabel labelCodigo;	
 	private JLabel labelNome;	
 	private JLabel labelDataNascimento;
@@ -46,49 +59,71 @@ public class TelaDizimista extends JFrame {
 	private JFormattedTextField campoDataNascimento;
 	private JFormattedTextField campoDataNascimentoConjugue;
 	private JFormattedTextField campoDataCasamento;
-	private MaskFormatter format;
-	private MaskFormatter format2;	
-	private MaskFormatter format3;	
-	private MaskFormatter format4;
+	private MaskFormatter formatDtNascimento;
+	private MaskFormatter formatDtCasamento;	
+	private MaskFormatter formatTelefone;	
+	private MaskFormatter formatDtNascimentoConjugue;
+	private DizimistaVO dizimista;
+	private DizimistaDAO dizimistaDAO;
+	private TelaMenu telaMenu;
+	private static final String TIPO_OBJETO = "Dizimista";
+	private static Logger logger = Logger.getLogger(TelaDizimista.class);
 		
-	public TelaDizimista(String titulo){
-		super(titulo);
-	}
-	
-	public void go(String labelBotao, boolean status, DizimistaVO dizimista) {		
-		setDefaultCloseOperation(JFrame.HIDE_ON_CLOSE);
+	public TelaDizimista(TelaMenu telaMenu){
+		super(TIPO_OBJETO, true, true, true, true);
+		setVisible(true);
 		setLayout(new FlowLayout());
-		setResizable(false);
-				
+		boolean status = true;
+		
+		this.telaMenu = telaMenu;
+		telaMenu.desktop.add(this);
+		
 		try {
-			format = new MaskFormatter("##/##/####");	
-			format2 = new MaskFormatter("##/##/####");	
-			format3 = new MaskFormatter("(##)####-####");
-			format4 = new MaskFormatter("##/##/####");
-					
+			formatDtNascimento = new MaskFormatter("##/##/####");	
+			formatDtCasamento = new MaskFormatter("##/##/####");	
+			formatTelefone = new MaskFormatter("(##)####-####");
+			formatDtNascimentoConjugue = new MaskFormatter("##/##/####");
 		} catch (ParseException ex) {
-			ex.printStackTrace();
+			logger.error("Erro ao criar parser", ex);
 		}
 
-		botaoSalvar = new JButton(labelBotao);
-		botaoLimpar = new JButton("Limpar");
+		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("br/saogeraldo/util/pesquisar.gif")));
+		botaoPesquisarPorNome.setToolTipText("Pesquisar por Nome");
+		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("br/saogeraldo/util/pesquisar.gif")));
+		botaoPesquisarPorCodigo.setToolTipText("Pesquisar por Código");
+		botaoSalvar = new JButtonEnter(Mensagem.LABEL_SALVAR);
+		botaoAlterar = new JButtonEnter(Mensagem.LABEL_ALTERAR);
+		botaoExcluir = new JButtonEnter(Mensagem.LABEL_EXCLUIR);
+		botaoLimpar = new JButtonEnter(Mensagem.LABEL_LIMPAR);
 		labelNome = new JLabel("* Nome:");
+		labelNome.setToolTipText("Nome");
 		labelCodigo = new JLabel("* Código:");
+		labelCodigo.setToolTipText("Código");
 		labelDataNascimento = new JLabel("* Data Nascimento:");
+		labelDataNascimento.setToolTipText("Data Nascimento");
 		labelDataNascimentoConjugue = new JLabel("D.N. Conjugue:");
+		labelDataNascimentoConjugue.setToolTipText("Data Nascimento Cônjugue");
 		labelConjugue = new JLabel(" Conjugue:");
+		labelConjugue.setToolTipText("Nome do Cônjugue");
 		labelEndereco = new JLabel(" Endereço:");
+		labelEndereco.setToolTipText("Endereço");
 		labelTelefone = new JLabel(" Telefone:");
+		labelTelefone.setToolTipText("Telefone");
 		labelDataCasamento = new JLabel(" Data Casamento:");
+		labelDataCasamento.setToolTipText("Data de Casamento");
 
 		campoNome = new JTextField(100);
 		campoCodigo = new JTextField(10);
 		campoConjugue = new JTextField(100);		
 		campoEndereco = new JTextField(100);		
-		campoDataNascimento = new JFormattedTextField(format);
-		campoDataCasamento = new JFormattedTextField(format2);
-		campoDataNascimentoConjugue = new JFormattedTextField(format4);
-		campoTelefone = new JFormattedTextField(format3);		
+		campoDataNascimento = new JFormattedTextField(formatDtNascimento);
+		campoDataNascimento.setFocusLostBehavior(JFormattedTextField.COMMIT);
+		campoDataCasamento = new JFormattedTextField(formatDtCasamento);
+		campoDataCasamento.setFocusLostBehavior(JFormattedTextField.COMMIT);
+		campoDataNascimentoConjugue = new JFormattedTextField(formatDtNascimentoConjugue);
+		campoDataNascimentoConjugue.setFocusLostBehavior(JFormattedTextField.COMMIT);
+		campoTelefone = new JFormattedTextField(formatTelefone);	
+		campoTelefone.setFocusLostBehavior(JFormattedTextField.COMMIT);
 			
 		campoNome.setEditable(status);		
 		campoCodigo.setEditable(status);
@@ -99,28 +134,31 @@ public class TelaDizimista extends JFrame {
 		campoDataNascimentoConjugue.setEditable(status);
 		campoDataCasamento.setEditable(status);
 
-		super.add(getpanelform());
-				
-		if (labelBotao.equals("Alterar")){
-			campoCodigo.setEditable(false);
-			setTela(dizimista);
-		}else if (labelBotao.equals("Excluir")){
-			botaoLimpar.setVisible(false);
-			setTela(dizimista);
-		}else if (labelBotao.equals("Consultar")){
-			botaoLimpar.setVisible(false);
-			botaoSalvar.setVisible(false);
-			setTela(dizimista);
-		}
+		habilitaBotoes(true);
+
+		JPanel painel = getpanelform();
+
+		super.add(painel);
+
+		JPanel painelBotao = new JPanel();
+
+		painelBotao.add(botaoSalvar);
+		painelBotao.add(botaoAlterar);
+		painelBotao.add(botaoExcluir);
+		painelBotao.add(botaoLimpar);
+
+		super.add(painelBotao);
+
+		campoCodigo.requestFocus();
+
 		super.pack();
-
-	}		
-
+	}
+	
 	public JPanel getpanelform() {
 		
 		FormLayout formlayout = new FormLayout(
-				"2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 90px, 2dlu, pref, 2dlu, 70px, 2dlu",
-				"2dlu, top:pref, 2dlu, top:pref, 2dlu, top:pref, 2dlu, pref, 2dlu, pref, 8dlu, pref, 8dlu");
+				"2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
+				"2dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 2dlu");
 		JPanel jpanel = new JPanel(formlayout);		
 		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
 		CellConstraints cellconstraints = new CellConstraints();		
@@ -128,75 +166,104 @@ public class TelaDizimista extends JFrame {
 		
 		botaoSalvar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {					
-				if (botaoSalvar.getText().equals("Alterar")){					
-					alterar(evt);					
-				}else if (botaoSalvar.getText().equals("Excluir")){
-					excluir(evt);	
-				}else{
-					salvar(evt);
-				}
+				salvar();
 			}
-
+		});
+		botaoAlterar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				alterar();
+			}
+		});
+		botaoExcluir.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				excluir();
+			}
 		});
 		botaoLimpar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {				
-					limpar();				
+				limpar();				
 			}
-
+		});
+		botaoPesquisarPorNome.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				pesquisaPorNome();
+			}
+		});
+		botaoPesquisarPorCodigo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				pesquisaPorCodigo();
+			}
 		});
 				
 		jpanel.add(labelCodigo, cellconstraints.xy(2, 2));
-		jpanel.add(campoCodigo, cellconstraints.xy(4, 2));
-		jpanel.add(labelDataNascimento, cellconstraints.xy(6, 2));
-		jpanel.add(campoDataNascimento, cellconstraints.xyw(8, 2, 3));
-		jpanel.add(labelNome, cellconstraints.xy(2, 4));
-		jpanel.add(campoNome, cellconstraints.xyw(4, 4, 9));	
-		jpanel.add(labelConjugue, cellconstraints.xy(2, 6));
-		jpanel.add(campoConjugue, cellconstraints.xyw(4, 6, 3));		
-		jpanel.add(labelDataNascimentoConjugue, cellconstraints.xy(8, 6));
-		jpanel.add(campoDataNascimentoConjugue, cellconstraints.xyw(10, 6, 3));			
-		jpanel.add(labelEndereco, cellconstraints.xy(2, 8));
-		jpanel.add(campoEndereco, cellconstraints.xyw(4, 8, 9));		
-		jpanel.add(labelTelefone, cellconstraints.xy(2, 10));
-		jpanel.add(campoTelefone, cellconstraints.xy(4, 10));		
-		jpanel.add(labelDataCasamento, cellconstraints.xy(6, 10));
-		jpanel.add(campoDataCasamento, cellconstraints.xyw(8, 10,3));		
-		jpanel.add(botaoSalvar,cellconstraints.xy(6, 12));
-		jpanel.add(botaoLimpar,cellconstraints.xy(8, 12));
+		jpanel.add(campoCodigo, cellconstraints.xyw(4, 2, 3));
+		jpanel.add(botaoPesquisarPorCodigo, cellconstraints.xy(8, 2));
 		
+		jpanel.add(labelNome, cellconstraints.xy(2, 4));
+		jpanel.add(campoNome, cellconstraints.xyw(4, 4, 11));	
+		jpanel.add(botaoPesquisarPorNome, cellconstraints.xy(16, 4));
+		
+		jpanel.add(labelDataNascimento, cellconstraints.xy(2, 6));
+		jpanel.add(campoDataNascimento, cellconstraints.xyw(4, 6, 3));
+		
+		jpanel.add(labelTelefone, cellconstraints.xy(2, 8));
+		jpanel.add(campoTelefone, cellconstraints.xyw(4, 8, 3));	
+		
+		jpanel.add(labelDataCasamento, cellconstraints.xy(2, 10));
+		jpanel.add(campoDataCasamento, cellconstraints.xyw(4, 10,3));
+		
+		jpanel.add(labelConjugue, cellconstraints.xy(2, 12));
+		jpanel.add(campoConjugue, cellconstraints.xyw(4, 12, 9));
+		
+		jpanel.add(labelDataNascimentoConjugue, cellconstraints.xy(2, 14));
+		jpanel.add(campoDataNascimentoConjugue, cellconstraints.xyw(4, 14, 3));		
+		
+		jpanel.add(labelEndereco, cellconstraints.xy(2, 16));
+		jpanel.add(campoEndereco, cellconstraints.xyw(4, 16, 9));		
+	
 		return jpanel;
-
 	}
 	
-	public DizimistaVO getTela(){				
-		DizimistaVO dz = new DizimistaVO();	
-		dz.setIdDizimista(Integer.parseInt(campoCodigo.getText()));
-		dz.setNome(campoNome.getText());			
-		dz.setDtNascimento(Data.converteBRtoUSA(campoDataNascimento.getText()));
-		if(campoConjugue.getText().equals("")){
+	public DizimistaVO getDizimistaFomTela() throws ValidacaoException{				
+		DizimistaVO dz = null;
+		if (this.dizimista != null) {
+			dz = this.dizimista;
+		} else {
+			dz = new DizimistaVO();
+		}
+		if(campoCodigo.getText().trim().isEmpty()){
+			dz.setIdDizimista(0);
+		}else{
+			dz.setIdDizimista(Integer.parseInt(campoCodigo.getText()));
+		}
+		
+		if(campoNome.getText().trim().isEmpty()){
+			dz.setNome(null);
+		}else{
+			dz.setNome(campoNome.getText());
+		}
+		
+		dz.setDtNascimento(getDate(campoDataNascimento, labelDataNascimento));
+		
+		if(campoConjugue.getText().trim().isEmpty()){
 			dz.setNomeConjugue(null);
 		}else{
 			dz.setNomeConjugue(campoConjugue.getText());
 		}
 		
-		if(campoDataNascimentoConjugue.getText().trim().length() != 10){
-			dz.setDtNascimentoConjugue(Data.converteBRtoUSA(""));
-		}else{
-			dz.setDtNascimentoConjugue(Data.converteBRtoUSA(campoDataNascimentoConjugue.getText()));
-		}	
+		dz.setDtNascimentoConjugue(getDate(campoDataNascimentoConjugue, labelDataNascimentoConjugue));
+		dz.setDtCasamento(getDate(campoDataCasamento, labelDataCasamento));
 		
-		if(campoDataCasamento.getText().trim().length() != 10){
-			dz.setDtCasamento(Data.converteBRtoUSA(""));
-		}else{
-			dz.setDtCasamento(Data.converteBRtoUSA(campoDataCasamento.getText()));
-		}	
-		
-		if(campoTelefone.getText().trim().length() != 13){
-			dz.setTelefone(null);
-		}else{
+		if(campoTelefone.getText().equals(campoTelefone.getValue())){
 			dz.setTelefone(campoTelefone.getText());
+		} else {
+			if (campoTelefone.getText().trim().equals("(  )    -")) {
+				dz.setTelefone(null);
+			} else {
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoTelefone.getText(), labelTelefone.getToolTipText()));
+			}
 		}
-		if(campoEndereco.getText().equals("")){
+		if(campoEndereco.getText().trim().isEmpty()){
 			dz.setEndereco(null);	
 		}else{
 			dz.setEndereco(campoEndereco.getText());	
@@ -204,107 +271,203 @@ public class TelaDizimista extends JFrame {
 	
 		return dz;
 	}
-
-	private void excluir(ActionEvent evt) {
-		DizimistaVO d = getTela();
+	
+	private Date getDate(JFormattedTextField campoData, JLabel labelData) throws ValidacaoException{
+		if (campoData.getText().equals(campoData.getValue())) {
+			try {
+				return DataUtil.convertStringToDate(campoData.getText(), DataUtil.PATTERN_DDMMYYYY);
+			} catch (ParseException e) {
+				campoData.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoData.getText(),labelData.getToolTipText()));
+			}
+		} else {
+			if (campoData.getText().trim().equals("/  /")) {
+				return null;
+			} else {
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoData.getText(), labelData.getToolTipText()));
+			}
+		}
+	}
+	
+	public void habilitaBotoes(boolean flag) {
+		botaoSalvar.setVisible(flag);
+		botaoAlterar.setVisible(!flag);
+		botaoExcluir.setVisible(!flag);
+	}
+	
+	public void restaura() {
+		this.setVisible(true);
 		try {
-			new DizimistaDAO().delete(d.getIdDizimista());
-			dispose();
-			JOptionPane.showMessageDialog(this, "Dizimista excluído com sucesso!!","sucesso",JOptionPane.INFORMATION_MESSAGE);
-		} catch (SQLException e) {			
-			e.printStackTrace();
-		}		
+			this.setIcon(false);
+			this.setMaximum(false);
+		} catch (PropertyVetoException e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+		}
 	}
 
-	private void salvar(ActionEvent evt) {
-		DizimistaVO d;
-		DizimistaDAO dao = new DizimistaDAO();
-		if (validaCampos()){
-			if(validaRegra()){
-				d = getTela();
-				try {				
-					if(!dao.existeCodigo(d.getIdDizimista())){
-						dao.insert(d);								
-						dispose();
-						JOptionPane.showMessageDialog(this, "Dizimista cadastrado com sucesso!!","sucesso",JOptionPane.INFORMATION_MESSAGE);					
-					}else{
-						JOptionPane.showMessageDialog(this, "Este código de Dizimista já existe!!","Atenção!",JOptionPane.WARNING_MESSAGE);
-						campoCodigo.requestFocus();
-						campoCodigo.setText("");
-					}				
-					
-				} catch (SQLException e) {			
-					e.printStackTrace();
-				}
+	private void excluir() {
+		try {
+			Object[] options = { Mensagem.SIM, Mensagem.NAO };
+			int res = JOptionPane.showOptionDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CONFIRMA_EXCLUSAO, dizimista.getNome()), Mensagem.CONFIRMA,
+					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+			if (res == JOptionPane.YES_OPTION) {
+				getDizimistaDAO().delete(dizimista.getIdDizimista());
+				limpar();
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+						JOptionPane.INFORMATION_MESSAGE);
+			}
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+
+	private void salvar() {
+		try {
+			DizimistaVO dizimista = getDizimistaFomTela();
+			validaDizimista(dizimista);
+			if(!getDizimistaDAO().existeCodigo(dizimista.getIdDizimista())){
+				getDizimistaDAO().insert(dizimista);								
+				limpar();
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+						JOptionPane.INFORMATION_MESSAGE);					
 			}else{
-				JOptionPane.showMessageDialog(this, "Preencha o nome do Conjugue!!!!","Atenção",JOptionPane.WARNING_MESSAGE);
-				pack();
-			}			
-		}else{
-			JOptionPane.showMessageDialog(this, "Campo(s) em branco!!!!","Atenção",JOptionPane.WARNING_MESSAGE);
-			pack();
-		}		
-	
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
+				campoCodigo.requestFocus();
+				campoCodigo.setText("");
+			}	
+		} catch (ValidacaoException e) {
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
 	}
 	
-	private void alterar(ActionEvent evt) {
-		DizimistaVO dz;
-		if (validaCampos()){
-			if(validaRegra()){
-				dz = getTela();
-				try {
-					new DizimistaDAO().update(dz);
-					dispose();
-					JOptionPane.showMessageDialog(this, "Dizimista alterado com sucesso!!","sucesso",JOptionPane.INFORMATION_MESSAGE);
-				} catch (SQLException e) {			
-					e.printStackTrace();
-				}
-			}else{
-				JOptionPane.showMessageDialog(this, "Preencha o nome do Conjugue!!!!","Atenção",JOptionPane.WARNING_MESSAGE);
-				pack();
-			}			
-		}else{
-			JOptionPane.showMessageDialog(this, "Campo(s) em branco!!!!","Atenção",JOptionPane.WARNING_MESSAGE);
-			pack();
-		}		
-		
+	private void alterar() {
+		try {
+			DizimistaVO dizimista = getDizimistaFomTela();
+			validaDizimista(dizimista);
+			getDizimistaDAO().update(dizimista);								
+			limpar();
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
+						JOptionPane.INFORMATION_MESSAGE);					
+		} catch (ValidacaoException e) {
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
 	}	
+	
+	private void pesquisaPorNome() {
+		try {
+			if (!campoNome.getText().isEmpty()) {
+				List<DizimistaVO> lista = getDizimistaDAO().getDizimistaByName(campoNome.getText());
+				if (!lista.isEmpty()) {
+					if (lista.size() == 1) {
+						setDizimistaToTela(lista.get(0));
+						habilitaBotoes(false);
+					} else {
+						TelaListagemDizimista tela = new TelaListagemDizimista(telaMenu, lista, this);
+						tela.setBounds(telaMenu.ESPACO_ENTRE_JANELA / 2, (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.desktop.getWidth() - telaMenu.ESPACO_ENTRE_JANELA, telaMenu.desktop
+								.getHeight()
+								- (int)(telaMenu.ESPACO_ENTRE_JANELA * 1.5));
+						telaMenu.desktop.moveToFront(tela);
+					}
+				} else {
+					JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				}
+			} else {
+				campoNome.requestFocus();
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelNome.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void pesquisaPorCodigo() {
+		try {
+			if (!campoCodigo.getText().trim().isEmpty()) {
+				DizimistaVO dizimista = getDizimistaDAO().getDizimistaByCodigo(Integer.parseInt(campoCodigo.getText()));
+				if(dizimista != null){
+					setDizimistaToTela(dizimista);
+					habilitaBotoes(false);
+				} else {
+					JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				}
+			} else {
+				campoCodigo.requestFocus();
+				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelCodigo.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			}
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void validaDizimista(DizimistaVO dizimista) throws ValidacaoException {
+		if (dizimista.getIdDizimista()==0) {
+			campoCodigo.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelCodigo.getToolTipText()));
+		}
+		if (dizimista.getNome() == null || dizimista.getNome().isEmpty()) {
+			campoNome.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelNome.getToolTipText()));
+		}
+		if (dizimista.getDtNascimento() == null) {
+			campoDataNascimento.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelDataNascimento.getToolTipText()));
+		}
+		if(dizimista.getDtNascimentoConjugue() != null && dizimista.getNomeConjugue() == null){
+			campoConjugue.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelConjugue.getToolTipText()));
+		}
+		if(dizimista.getDtCasamento() != null && dizimista.getNomeConjugue() == null){
+			campoConjugue.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelConjugue.getToolTipText()));
+		}
+	}
 
-	public boolean validaCampos() {
-		boolean flag = true;		
-				
-		if (campoNome.getText().equals("")) {
-			flag = false;
-		}else if (campoCodigo.getText().equals("")) {
-			flag = false;
-		}else if (campoDataNascimento.getText().trim().length() != 10) {
-			flag = false;		
-		}		
-		return flag;		
-	}
-	
-	private boolean validaRegra(){
-		boolean flag = true;		
-		if(campoDataNascimentoConjugue.getText().trim().length() == 10 && campoConjugue.getText().equals("")){
-			campoConjugue.requestFocus();
-			flag = false;
-		}
-		if(campoDataCasamento.getText().trim().length() == 10 && campoConjugue.getText().equals("")){
-			campoConjugue.requestFocus();
-			flag = false;
-		}
-		return flag;
-	}
-	
-	public void setTela(DizimistaVO dz){
+	public void setDizimistaToTela(DizimistaVO dz) throws ValidacaoException{
 		campoNome.setText(dz.getNome());
 		campoCodigo.setText(String.valueOf(dz.getIdDizimista()));
 		campoConjugue.setText(dz.getNomeConjugue());		
-		campoDataNascimento.setText(Data.converteUSAtoBR(dz.getDtNascimento(), false));	
-		campoDataCasamento.setText(Data.converteUSAtoBR(dz.getDtCasamento(), false));
-		campoDataNascimentoConjugue.setText(Data.converteUSAtoBR(dz.getDtNascimentoConjugue(), false));
+		try {
+			campoDataNascimento.setText(DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY));
+		} catch (ParseException e) {
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(), labelDataNascimento.getToolTipText()));
+		}
+		try {
+			campoDataCasamento.setText(DataUtil.convertDateToString(dz.getDtCasamento(), DataUtil.PATTERN_DDMMYYYY));
+		} catch (ParseException e) {
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataCasamento.getText(), labelDataCasamento.getToolTipText()));
+		}
+		try {
+			campoDataNascimentoConjugue.setText(DataUtil.convertDateToString(dz.getDtNascimentoConjugue(), DataUtil.PATTERN_DDMMYYYY));
+		} catch (ParseException e) {
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimentoConjugue.getText(), labelDataNascimentoConjugue.getToolTipText()));
+		}
 		campoEndereco.setText(dz.getEndereco());		
-		campoTelefone.setText(dz.getTelefone());		
+		campoTelefone.setText(dz.getTelefone());
+		dizimista = dz;
 	}
 	
 	public void limpar(){
@@ -315,9 +478,18 @@ public class TelaDizimista extends JFrame {
 		campoDataCasamento.setText("");
 		campoConjugue.setText("");
 		campoEndereco.setText("");
-		campoTelefone.setText("");		
+		campoTelefone.setText("");
 		campoCodigo.requestFocus();
-	}	
+		habilitaBotoes(true);
+		dizimista = null;
+	}
+	
+	public DizimistaDAO getDizimistaDAO() {
+		if (dizimistaDAO == null) {
+			dizimistaDAO = new DizimistaDAO();
+		}
+		return dizimistaDAO;
+	}
 }
 
 // classe que valida os campos pra receberem somente números

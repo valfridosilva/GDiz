@@ -5,44 +5,53 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.text.ParseException;
+
 import javax.swing.JButton;
 import javax.swing.JFormattedTextField;
-import javax.swing.JFrame;
+import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.text.MaskFormatter;
-import br.saogeraldo.negocio.*;
 
-public class TelaAniversario extends JFrame {
+import br.saogeraldo.negocio.RelatorioBO;
+import br.saogeraldo.util.JButtonEnter;
+import br.saogeraldo.util.TipoPesquisa;
+
+public class TelaPesquisa extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
-	private MaskFormatter format;
+	private MaskFormatter formatData;
 	private JFormattedTextField dataInicial;
 	private JFormattedTextField dataFinal;
 	private JLabel rotuloDataInicial;
 	private JLabel rotuloDataFinal;
 	private JButton botao;	
+	private TipoPesquisa tipoPesquisa;
 	
-	public TelaAniversario() {
-		super("Aniversário");
+	public TelaPesquisa(TelaMenu telaMenu, TipoPesquisa tipoPesquisa) {
+		super("Casamento", true, true, true, true);
+		
+		this.tipoPesquisa = tipoPesquisa;
+		telaMenu.desktop.add(this);
 		
 		try {
-			format = new MaskFormatter("##/##");
+			formatData = new MaskFormatter("##/##");
 		} catch (ParseException ex) {
 			ex.printStackTrace();
 		}
 
 		setSize(380, 100);
 		setLayout(new FlowLayout());
-		setLocationRelativeTo(null);
 		setResizable(false);
 		setDefaultCloseOperation(HIDE_ON_CLOSE);
 
 		rotuloDataInicial = new JLabel("Data Inicial:");
 		rotuloDataFinal = new JLabel("Data Final:");
-		dataInicial = new JFormattedTextField(format);
-		dataFinal = new JFormattedTextField(format);
-		botao = new JButton("Gerar Relatório");
+		dataInicial = new JFormattedTextField(formatData);
+		dataInicial.setFocusLostBehavior(JFormattedTextField.COMMIT);
+		dataFinal = new JFormattedTextField(formatData);
+		dataFinal.setFocusLostBehavior(JFormattedTextField.COMMIT);
+		botao = new JButtonEnter("Gerar Relatório");
 		
 		dataInicial.setPreferredSize(new Dimension(70, 22));
 		dataFinal.setPreferredSize(new Dimension(70, 22));
@@ -60,7 +69,6 @@ public class TelaAniversario extends JFrame {
 		});
 	}	
 
-	@SuppressWarnings("deprecation")
 	public void pesquisar(ActionEvent e) {					
 		String data1 = dataInicial.getText();
 		String data2 = dataFinal.getText();
@@ -78,7 +86,14 @@ public class TelaAniversario extends JFrame {
 					try {				
 						
 						RelatorioBO rel = new RelatorioBO();
-						boolean status = rel.runAniversario(data1, data2);										
+						boolean status = false;
+						if(TipoPesquisa.ANIVERSARIO.equals(tipoPesquisa)){
+							status = rel.runAniversario(data1, data2);
+						}
+						else if(TipoPesquisa.CASAMENTO.equals(tipoPesquisa)){
+							status = rel.runCasamento(data1, data2);
+						}
+																
 						if(!status){
 							JOptionPane.showMessageDialog(this, "Nenhum registro encontrado!","Atenção!",JOptionPane.WARNING_MESSAGE);
 						}

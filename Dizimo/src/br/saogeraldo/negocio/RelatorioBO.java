@@ -4,8 +4,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import br.saogeraldo.util.Data;
-import br.saogeraldo.util.Relatorio;
+import br.saogeraldo.util.DataUtil;
+import br.saogeraldo.util.RelatorioUtil;
 import br.saogeraldo.dao.DizimistaDAO;
 import br.saogeraldo.bean.DizimistaVO;
  
@@ -19,13 +19,13 @@ public class RelatorioBO{
 		boolean flag = false;	
 		param = new HashMap<String, String>();
 		param.put("title", dtInicio+" - "+dtFim);
-		String mesDia1 = Data.converteDayMonthBRtoUSA(dtInicio);
-		String mesDia2 = Data.converteDayMonthBRtoUSA(dtFim);
+		String mesDia1 = DataUtil.converteDayMonthBRtoUSA(dtInicio);
+		String mesDia2 = DataUtil.converteDayMonthBRtoUSA(dtFim);
 		dizimistas = new DizimistaDAO().getAniversarioByDay(mesDia1, mesDia2);
 		if(dizimistas.size()> 0){
 			flag = true;
 			path = "C:/Dizimo/Rel_Aniversario.jasper";
-			new Relatorio().runRelatorio(path, dizimistas, param);
+			new RelatorioUtil().runRelatorio(path, dizimistas, param);
 		}		
 		return flag;
 	}
@@ -34,13 +34,13 @@ public class RelatorioBO{
 		boolean flag = false;	
 		param = new HashMap<String, String>();
 		param.put("title", dtInicio+" - "+dtFim);		
-		String mesDia1 = Data.converteDayMonthBRtoUSA(dtInicio);
-		String mesDia2 = Data.converteDayMonthBRtoUSA(dtFim);
+		String mesDia1 = DataUtil.converteDayMonthBRtoUSA(dtInicio);
+		String mesDia2 = DataUtil.converteDayMonthBRtoUSA(dtFim);
 		dizimistas = new DizimistaDAO().getCasamentoByDay(mesDia1, mesDia2);
 		if(dizimistas.size()> 0){
 			flag = true;
 			path = "C:/Dizimo/Rel_Casamento.jasper";
-			new Relatorio().runRelatorio(path, dizimistas, param);
+			new RelatorioUtil().runRelatorio(path, dizimistas, param);
 		}		
 		return flag;
 	}
@@ -53,7 +53,7 @@ public class RelatorioBO{
 		if(dizimistas.size()> 0){
 			flag = true;
 			path = "C:/Dizimo/Rel_Aniversario.jasper";
-			new Relatorio().runRelatorio(path, dizimistas, param);
+			new RelatorioUtil().runRelatorio(path, dizimistas, param);
 		}		
 		return flag;
 	}	
@@ -65,7 +65,7 @@ public class RelatorioBO{
 		if(dizimistas.size()> 0){
 			flag = true;
 			path = "C:/Dizimo/Rel_Recadastramento.jasper";
-			new Relatorio().runRelatorio(path, dizimistas, param);
+			new RelatorioUtil().runRelatorio(path, dizimistas, param);
 		}		
 		return flag;
 	}	

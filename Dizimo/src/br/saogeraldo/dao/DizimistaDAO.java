@@ -23,7 +23,7 @@ public class DizimistaDAO {
 		ps = con.prepareStatement(sql);
 		ps.setInt(1, dz.getIdDizimista());		
 		ps.setString(2, dz.getNome());		
-		ps.setDate(3, (java.sql.Date)dz.getDtNascimento());
+		ps.setDate(3, new java.sql.Date(dz.getDtNascimento().getTime()));
 		ps.setString(4, dz.getNomeConjugue());		
 		ps.setDate(5, (java.sql.Date)dz.getDtNascimentoConjugue());
 		ps.setString(6, dz.getEndereco());
@@ -31,7 +31,6 @@ public class DizimistaDAO {
 		ps.setDate(8, (java.sql.Date)dz.getDtCasamento());
 
 		ps.execute();
-		con.close();
 	}	
 	/**
 	 * Atualiza os dados do Dizimista
@@ -43,7 +42,7 @@ public class DizimistaDAO {
 		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, nomeConjugue = ?, dtNascimentoConjugue = ?, endereco = ?, telefone = ?, dtCasamento = ? WHERE idDizimista = ?";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dz.getNome());				
-		ps.setDate(2, (java.sql.Date)dz.getDtNascimento());
+		ps.setDate(2, new java.sql.Date(dz.getDtNascimento().getTime()));
 		ps.setString(3, dz.getNomeConjugue());				
 		ps.setDate(4, (java.sql.Date)dz.getDtNascimentoConjugue());
 		ps.setString(5, dz.getEndereco());		
@@ -52,7 +51,6 @@ public class DizimistaDAO {
 		ps.setInt(8, dz.getIdDizimista());
 
 		ps.executeUpdate();
-		con.close();
 	}		
 	/**
 	 * Deleta o Dizimista
@@ -66,7 +64,6 @@ public class DizimistaDAO {
 		ps.setInt(1, id);
 
 		ps.execute();
-		con.close();
 	}
 	/**	 
 	 * Consulta um Dizimista pelo código	 

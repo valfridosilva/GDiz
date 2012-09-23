@@ -28,5 +28,15 @@ public class FabricaConexao {
 		}			
 		return conexao;		
 	}	
+	
+	public static void close(){
+		if(conexao != null){
+			try {
+				conexao.close();
+			} catch (SQLException e) {
+				e.printStackTrace();
+			}
+		}
+	}
 
 }
