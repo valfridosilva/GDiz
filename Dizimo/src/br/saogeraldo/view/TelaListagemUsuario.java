@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -26,63 +25,26 @@ import javax.swing.table.TableColumnModel;
 
 import org.apache.log4j.Logger;
 
-import br.saogeraldo.bean.DizimistaVO;
-import br.saogeraldo.util.DataUtil;
+import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.ModeloRelatorio;
 import br.saogeraldo.util.ValidacaoException;
 
-public class TelaListagemDizimista extends JInternalFrame {
+public class TelaListagemUsuario extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;
 	private ModeloRelatorio modelo; 
-	private Map<Integer, DizimistaVO> mapa;
-	private static Logger logger = Logger.getLogger(TelaListagemDizimista.class);
-	
-	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista){
-		super("Listagem", true, true, true, true);
-		telaMenu.addJanela(this);
-		modelo = new ModeloRelatorio(new String[]{ "Cod", "Nome", "Data Nascimento"});
-		mapa = new HashMap<Integer, DizimistaVO>();		
-		int index = 0;
-		for(DizimistaVO obj: lista){
-			modelo.add(transformaToArray(obj));// adiciona o objeto ao relatório
-			mapa.put(index, obj);
-			index++;
-		}	
+	private Map<Integer, UsuarioVO> mapa;
+	private static Logger logger = Logger.getLogger(TelaListagemUsuario.class);
 		
-		tabela = new JTable(modelo);
-		tabela.setRowHeight(22); // tamanho da linha
-		dimensionaColuna(tabela.getColumnModel()); 
-		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 
-		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		tabela.setPreferredScrollableViewportSize(new Dimension(560,200));	
-		
-		setLayout(new FlowLayout());
-		
-		JButton botaoVoltar = new JButton(Mensagem.LABEL_CANCELAR);
-					
-		botaoVoltar.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				voltar();				
-			}			
-		});
-
-		JScrollPane scrollPane = new JScrollPane(tabela);
-		add(scrollPane);
-		add(BorderLayout.SOUTH,botaoVoltar);			
-		setSize(650, 300);
-		setVisible(true);
-	}
-	
-	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista, final TelaDizimista telaDizimista){
+	public TelaListagemUsuario(TelaMenu telaMenu, List<UsuarioVO> lista, final TelaUsuario telaUsuario){
 		super("Click na linha desejada", true, true, false, false);
 		telaMenu.addJanela(this);
-		modelo = new ModeloRelatorio(new String[]{ "Cod", "Nome", "Data Nascimento"});
-		mapa = new HashMap<Integer, DizimistaVO>();		
+		modelo = new ModeloRelatorio(new String[]{ "Nome"});
+		mapa = new HashMap<Integer, UsuarioVO>();		
 		int index = 0;
-		for(DizimistaVO obj: lista){
+		for(UsuarioVO obj: lista){
 			modelo.add(transformaToArray(obj));// adiciona o objeto ao relatório
 			mapa.put(index, obj);
 			index++;
@@ -93,11 +55,11 @@ public class TelaListagemDizimista extends JInternalFrame {
 		dimensionaColuna(tabela.getColumnModel()); 
 		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 
 		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		tabela.setPreferredScrollableViewportSize(new Dimension(560,200));	
+		tabela.setPreferredScrollableViewportSize(new Dimension(450, 100));	
 		
 		tabela.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				trataEvento(telaDizimista);				
+				trataEvento(telaUsuario);				
 			}
 		});
 		
@@ -105,10 +67,10 @@ public class TelaListagemDizimista extends JInternalFrame {
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		im.put(enter, im.get(KeyStroke.getKeyStroke(KeyEvent.VK_GREATER, 0)));
 		Action enterAction = new AbstractAction() {		
-			private static final long serialVersionUID = -7691518916575740081L;
+			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
 				modelo = (ModeloRelatorio)((JTable) e.getSource()).getModel();
-				trataEvento(telaDizimista);
+				trataEvento(telaUsuario);
 			}
 		};
 		tabela.getActionMap().put(im.get(enter), enterAction);
@@ -125,35 +87,26 @@ public class TelaListagemDizimista extends JInternalFrame {
 
 		JScrollPane scrollPane = new JScrollPane(tabela);
 		add(scrollPane);
-		add(BorderLayout.SOUTH,botaoVoltar);			
+		add(BorderLayout.SOUTH,botaoVoltar);
 		setVisible(true);
 	}
 	
-	public Object[] transformaToArray(DizimistaVO dz) {		
-		Object[] linha = new Object[3];
+	public Object[] transformaToArray(UsuarioVO user) {		
+		Object[] linha = new Object[1];
 		int index = 0;
-		try {
-			linha[index++] = dz.getIdDizimista();
-			linha[index++] = dz.getNome();
-			linha[index++] = DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY);
-		} catch (ParseException e) {
-			logger.error(e);
-		}
+		linha[index++] = user.getNome();
 		return linha;
 	}
 	
 	public void dimensionaColuna(TableColumnModel modelo){
-		modelo.getColumn(0).setMinWidth(50);
-		modelo.getColumn(0).setMaxWidth(50);	
-		modelo.getColumn(2).setMinWidth(120);
-		modelo.getColumn(2).setMaxWidth(120);
+		modelo.getColumn(0).setMinWidth(100);
 	}
 	
 	private void voltar() {
 		dispose();		
 	}
 
-	private void trataEvento(final TelaDizimista tela) {
+	private void trataEvento(final TelaUsuario tela) {
 		int linha = tabela.getSelectedRow();
 		tela.setVisible(true);
 		try {

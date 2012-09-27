@@ -5,26 +5,31 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 import java.util.ResourceBundle;
 
+import org.apache.log4j.Logger;
+
 public class FabricaConexao {	
+	public static String caminhoBD;
 	private static Connection conexao;
 	private static String driver;
 	private static String url;
 	private static String user;
 	private static String password;
+	private static Logger logger = Logger.getLogger(FabricaConexao.class);
 	
 	public static Connection getConexao() throws SQLException {
-		if(conexao == null){
+		if(conexao == null || conexao.isClosed()){
 			ResourceBundle rb = ResourceBundle.getBundle("br.saogeraldo.util.banco");  
 	        driver = rb.getString("driver");
 	        url = rb.getString("url");
+	        caminhoBD = rb.getString("caminho");
 	        user = rb.getString("user"); 
 	        password = rb.getString("password"); 
 			try {
 				Class.forName(driver);
 			} catch (ClassNotFoundException e) {
-				e.printStackTrace();
+				logger.error("Erro ao carregar driver do banco de dados.",e);
 			}
-			conexao = DriverManager.getConnection(url, user, password);			
+			conexao = DriverManager.getConnection(url+caminhoBD, user, password);			
 		}			
 		return conexao;		
 	}	
@@ -34,9 +39,11 @@ public class FabricaConexao {
 			try {
 				conexao.close();
 			} catch (SQLException e) {
-				e.printStackTrace();
+				
+			}finally{
+				conexao=null;
 			}
 		}
 	}
-
+	
 }

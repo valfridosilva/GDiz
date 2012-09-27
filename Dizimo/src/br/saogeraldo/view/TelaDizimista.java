@@ -76,7 +76,7 @@ public class TelaDizimista extends JInternalFrame {
 		boolean status = true;
 		
 		this.telaMenu = telaMenu;
-		telaMenu.desktop.add(this);
+		telaMenu.addJanela(this);
 		
 		try {
 			formatDtNascimento = new MaskFormatter("##/##/####");	
@@ -136,7 +136,7 @@ public class TelaDizimista extends JInternalFrame {
 
 		habilitaBotoes(true);
 
-		JPanel painel = getpanelform();
+		JPanel painel = getPanelForm();
 
 		super.add(painel);
 
@@ -154,7 +154,7 @@ public class TelaDizimista extends JInternalFrame {
 		super.pack();
 	}
 	
-	public JPanel getpanelform() {
+	public JPanel getPanelForm() {
 		
 		FormLayout formlayout = new FormLayout(
 				"2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
@@ -213,18 +213,18 @@ public class TelaDizimista extends JInternalFrame {
 		jpanel.add(campoDataCasamento, cellconstraints.xyw(4, 10,3));
 		
 		jpanel.add(labelConjugue, cellconstraints.xy(2, 12));
-		jpanel.add(campoConjugue, cellconstraints.xyw(4, 12, 9));
+		jpanel.add(campoConjugue, cellconstraints.xyw(4, 12, 11));
 		
 		jpanel.add(labelDataNascimentoConjugue, cellconstraints.xy(2, 14));
 		jpanel.add(campoDataNascimentoConjugue, cellconstraints.xyw(4, 14, 3));		
 		
 		jpanel.add(labelEndereco, cellconstraints.xy(2, 16));
-		jpanel.add(campoEndereco, cellconstraints.xyw(4, 16, 9));		
+		jpanel.add(campoEndereco, cellconstraints.xyw(4, 16, 11));		
 	
 		return jpanel;
 	}
 	
-	public DizimistaVO getDizimistaFomTela() throws ValidacaoException{				
+	public DizimistaVO getObjectFomTela() throws ValidacaoException{				
 		DizimistaVO dz = null;
 		if (this.dizimista != null) {
 			dz = this.dizimista;
@@ -240,7 +240,7 @@ public class TelaDizimista extends JInternalFrame {
 		if(campoNome.getText().trim().isEmpty()){
 			dz.setNome(null);
 		}else{
-			dz.setNome(campoNome.getText());
+			dz.setNome(campoNome.getText().trim());
 		}
 		
 		dz.setDtNascimento(getDate(campoDataNascimento, labelDataNascimento));
@@ -248,7 +248,7 @@ public class TelaDizimista extends JInternalFrame {
 		if(campoConjugue.getText().trim().isEmpty()){
 			dz.setNomeConjugue(null);
 		}else{
-			dz.setNomeConjugue(campoConjugue.getText());
+			dz.setNomeConjugue(campoConjugue.getText().trim());
 		}
 		
 		dz.setDtNascimentoConjugue(getDate(campoDataNascimentoConjugue, labelDataNascimentoConjugue));
@@ -260,13 +260,14 @@ public class TelaDizimista extends JInternalFrame {
 			if (campoTelefone.getText().trim().equals("(  )    -")) {
 				dz.setTelefone(null);
 			} else {
+				campoTelefone.requestFocus();
 				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoTelefone.getText(), labelTelefone.getToolTipText()));
 			}
 		}
 		if(campoEndereco.getText().trim().isEmpty()){
 			dz.setEndereco(null);	
 		}else{
-			dz.setEndereco(campoEndereco.getText());	
+			dz.setEndereco(campoEndereco.getText().trim());	
 		}
 	
 		return dz;
@@ -308,64 +309,64 @@ public class TelaDizimista extends JInternalFrame {
 	private void excluir() {
 		try {
 			Object[] options = { Mensagem.SIM, Mensagem.NAO };
-			int res = JOptionPane.showOptionDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CONFIRMA_EXCLUSAO, dizimista.getNome()), Mensagem.CONFIRMA,
+			int res = JOptionPane.showOptionDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.CONFIRMA_EXCLUSAO, dizimista.getNome()), Mensagem.CONFIRMA,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
 			if (res == JOptionPane.YES_OPTION) {
 				getDizimistaDAO().delete(dizimista.getIdDizimista());
 				limpar();
-				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_EXCLUIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);
 			}
 		} catch (SQLException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 
 	private void salvar() {
 		try {
-			DizimistaVO dizimista = getDizimistaFomTela();
+			DizimistaVO dizimista = getObjectFomTela();
 			validaDizimista(dizimista);
 			if(!getDizimistaDAO().existeCodigo(dizimista.getIdDizimista())){
 				getDizimistaDAO().insert(dizimista);								
 				limpar();
-				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);					
 			}else{
-				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
 				campoCodigo.requestFocus();
 				campoCodigo.setText("");
 			}	
 		} catch (ValidacaoException e) {
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (SQLException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
 	private void alterar() {
 		try {
-			DizimistaVO dizimista = getDizimistaFomTela();
+			DizimistaVO dizimista = getObjectFomTela();
 			validaDizimista(dizimista);
 			getDizimistaDAO().update(dizimista);								
 			limpar();
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_ALTERADO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);					
 		} catch (ValidacaoException e) {
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (SQLException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}	
 	
@@ -375,28 +376,28 @@ public class TelaDizimista extends JInternalFrame {
 				List<DizimistaVO> lista = getDizimistaDAO().getDizimistaByName(campoNome.getText());
 				if (!lista.isEmpty()) {
 					if (lista.size() == 1) {
-						setDizimistaToTela(lista.get(0));
+						setObjectToTela(lista.get(0));
 						habilitaBotoes(false);
 					} else {
 						TelaListagemDizimista tela = new TelaListagemDizimista(telaMenu, lista, this);
-						tela.setBounds(telaMenu.ESPACO_ENTRE_JANELA / 2, (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.desktop.getWidth() - telaMenu.ESPACO_ENTRE_JANELA, telaMenu.desktop
+						tela.setBounds(telaMenu.ESPACO_ENTRE_JANELA / 2, (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.getDesktop().getWidth() - telaMenu.ESPACO_ENTRE_JANELA, telaMenu.getDesktop()
 								.getHeight()
 								- (int)(telaMenu.ESPACO_ENTRE_JANELA * 1.5));
-						telaMenu.desktop.moveToFront(tela);
+						telaMenu.getDesktop().moveToFront(tela);
 					}
 				} else {
-					JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 				}
 			} else {
 				campoNome.requestFocus();
-				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelNome.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelNome.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (SQLException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -405,21 +406,21 @@ public class TelaDizimista extends JInternalFrame {
 			if (!campoCodigo.getText().trim().isEmpty()) {
 				DizimistaVO dizimista = getDizimistaDAO().getDizimistaByCodigo(Integer.parseInt(campoCodigo.getText()));
 				if(dizimista != null){
-					setDizimistaToTela(dizimista);
+					setObjectToTela(dizimista);
 					habilitaBotoes(false);
 				} else {
-					JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 				}
 			} else {
 				campoCodigo.requestFocus();
-				JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelCodigo.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelCodigo.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 			}
 		} catch (SQLException e) {
 			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(telaMenu.desktop.getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -446,27 +447,27 @@ public class TelaDizimista extends JInternalFrame {
 		}
 	}
 
-	public void setDizimistaToTela(DizimistaVO dz) throws ValidacaoException{
+	public void setObjectToTela(DizimistaVO dz) throws ValidacaoException{
 		campoNome.setText(dz.getNome());
 		campoCodigo.setText(String.valueOf(dz.getIdDizimista()));
 		campoConjugue.setText(dz.getNomeConjugue());		
 		try {
-			campoDataNascimento.setText(DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY));
+			campoDataNascimento.setValue(DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY));
 		} catch (ParseException e) {
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(), labelDataNascimento.getToolTipText()));
 		}
 		try {
-			campoDataCasamento.setText(DataUtil.convertDateToString(dz.getDtCasamento(), DataUtil.PATTERN_DDMMYYYY));
+			campoDataCasamento.setValue(DataUtil.convertDateToString(dz.getDtCasamento(), DataUtil.PATTERN_DDMMYYYY));
 		} catch (ParseException e) {
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataCasamento.getText(), labelDataCasamento.getToolTipText()));
 		}
 		try {
-			campoDataNascimentoConjugue.setText(DataUtil.convertDateToString(dz.getDtNascimentoConjugue(), DataUtil.PATTERN_DDMMYYYY));
+			campoDataNascimentoConjugue.setValue(DataUtil.convertDateToString(dz.getDtNascimentoConjugue(), DataUtil.PATTERN_DDMMYYYY));
 		} catch (ParseException e) {
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimentoConjugue.getText(), labelDataNascimentoConjugue.getToolTipText()));
 		}
 		campoEndereco.setText(dz.getEndereco());		
-		campoTelefone.setText(dz.getTelefone());
+		campoTelefone.setValue(dz.getTelefone());
 		dizimista = dz;
 	}
 	

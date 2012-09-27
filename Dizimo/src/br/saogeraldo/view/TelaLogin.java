@@ -5,6 +5,7 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.sql.SQLException;
 
 import javax.swing.JButton;
 import javax.swing.JFrame;
@@ -20,6 +21,7 @@ import br.saogeraldo.dao.UsuarioDAO;
 import br.saogeraldo.util.FabricaConexao;
 import br.saogeraldo.util.JButtonEnter;
 import br.saogeraldo.util.Mensagem;
+import br.saogeraldo.util.ValidacaoException;
 
 public class TelaLogin extends JFrame {
 
@@ -42,7 +44,9 @@ public class TelaLogin extends JFrame {
 	private void inicializa() {
 		rotulo = new JLabel("Entre com os dados abaixo para acessar o sistema", JLabel.CENTER);
 		rotuloUsuario = new JLabel("Usuário:", JLabel.CENTER);
+		rotuloUsuario.setToolTipText("Usuário");
 		rotuloSenha = new JLabel("    Senha:", JLabel.CENTER);
+		rotuloSenha.setToolTipText("Senha");
 		campoSenha = new JPasswordField(20);
 		campoSenha.setText("123");
 		campoSenha.setToolTipText("Senha");
@@ -89,32 +93,38 @@ public class TelaLogin extends JFrame {
 	}
 
 	private void logar() {
-		String senha = String.valueOf(campoSenha.getPassword());
-		if (campoUsuario.getText().trim().isEmpty()) {			
-			JOptionPane.showMessageDialog(this, String.format(Mensagem.CAMPO_OBRIGATORIO,campoUsuario.getToolTipText()),Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);	
-			campoUsuario.requestFocus();
-		} else if(senha.trim().isEmpty()){
-			JOptionPane.showMessageDialog(this, String.format(Mensagem.CAMPO_OBRIGATORIO,campoSenha.getToolTipText()),Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);	
-			campoSenha.requestFocus();
-		} else {
-			UsuarioDAO dao = new UsuarioDAO();
-			UsuarioVO user = new UsuarioVO();
-			user.setNome(campoUsuario.getText().toLowerCase());
-			user.setSenha(senha);
-			try {
-				usuario = dao.getLogin(user);
-				if (usuario != null) {
-					dispose();
-					new TelaMenu();
-				} else {
-					JOptionPane.showMessageDialog(this,"Usuário ou senha incorretos!!", Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
-					campoSenha.setText("");
-					campoUsuario.requestFocus();
-				}
-			} catch (Exception e) {
-				logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-				JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		String senhaStr = String.valueOf(campoSenha.getPassword());
+		String usuarioStr = campoUsuario.getText().toLowerCase();
+		try {
+			valida(usuarioStr, senhaStr);
+			usuario = new UsuarioDAO().getLogin(usuarioStr, senhaStr);
+			if (usuario != null) {
+				dispose();
+				new TelaMenu();
+			} else {
+				JOptionPane.showMessageDialog(this, "Usuário ou senha incorretos!!", Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				campoSenha.setText("");
+				campoUsuario.requestFocus();
 			}
+		} catch (ValidacaoException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(null, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void valida(String usuario, String senha) throws ValidacaoException{
+		if (usuario.trim().isEmpty()) {			
+			campoUsuario.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloUsuario.getToolTipText()));
+		} 
+		if(senha.trim().isEmpty()){
+			campoSenha.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloSenha.getToolTipText()));
 		}
 	}
 }

@@ -1,6 +1,10 @@
 package br.saogeraldo.view;
 
+import java.sql.SQLException;
+
 import javax.swing.UIManager;
+
+import br.saogeraldo.util.FabricaConexao;
 
 public class Principal {
 
@@ -15,5 +19,9 @@ public class Principal {
         		UIManager.put ("OptionPane.titleText","Selecione uma opção");
             }
         }); 
+		try {
+			FabricaConexao.getConexao();
+		} catch (SQLException e) {
+		}
 	}
 }
