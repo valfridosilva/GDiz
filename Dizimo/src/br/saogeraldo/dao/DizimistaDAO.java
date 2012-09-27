@@ -31,6 +31,7 @@ public class DizimistaDAO {
 		ps.setDate(8, (java.sql.Date)dz.getDtCasamento());
 
 		ps.execute();
+		ps.close();
 	}	
 	/**
 	 * Atualiza os dados do Dizimista
@@ -51,6 +52,7 @@ public class DizimistaDAO {
 		ps.setInt(8, dz.getIdDizimista());
 
 		ps.executeUpdate();
+		ps.close();
 	}		
 	/**
 	 * Deleta o Dizimista
@@ -64,6 +66,7 @@ public class DizimistaDAO {
 		ps.setInt(1, id);
 
 		ps.execute();
+		ps.close();
 	}
 	/**	 
 	 * Consulta um Dizimista pelo código	 
@@ -89,6 +92,7 @@ public class DizimistaDAO {
 			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtCasamento(rs.getDate("dtCasamento"));			
 		}
+		ps.close();
 		return dz;		
 	}
 	/**	 
@@ -103,7 +107,7 @@ public class DizimistaDAO {
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
 		String sql = "SELECT * FROM dizimista WHERE nome LIKE ?";
 		ps = con.prepareStatement(sql);
-		ps.setString(1, "%"+nome+"%");
+		ps.setString(1, nome+"%");
 		DizimistaVO dz = null;		
 		ResultSet rs = ps.executeQuery();
 		while(rs.next()){		
@@ -118,6 +122,7 @@ public class DizimistaDAO {
 			dz.setDtCasamento(rs.getDate("dtCasamento"));	
 			lista.add(dz);
 		}
+		ps.close();
 		return lista;		
 	}
 	/**
@@ -140,6 +145,7 @@ public class DizimistaDAO {
 			dz.setDtNascimento(rs.getDate("dtNascimento"));			
 			lista.add(dz);
 		}
+		ps.close();
 		return lista;		
 	}
 	/**
@@ -166,6 +172,7 @@ public class DizimistaDAO {
 			dz.setDtNascimento(rs.getDate("dtNascimento"));			
 			lista.add(dz);
 		}
+		ps.close();
 		return lista;
 	}
 	/**
@@ -192,6 +199,7 @@ public class DizimistaDAO {
 			dz.setDtCasamento(rs.getDate("dtCasamento"));				
 			lista.add(dz);
 		}
+		ps.close();
 		return lista;		
 	}
 	
@@ -218,6 +226,7 @@ public class DizimistaDAO {
 			dz.setDtCasamento(rs.getDate("dtCasamento"));		
 			todos.add(dz);
 		}
+		ps.close();
 		return todos;		
 		
 	}
@@ -238,6 +247,7 @@ public class DizimistaDAO {
 		if (rs.next()) {
 			status = true;
 		}
+		ps.close();
 		return status;
 	}
 
