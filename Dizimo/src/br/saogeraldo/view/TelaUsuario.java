@@ -200,10 +200,16 @@ public class TelaUsuario extends JInternalFrame {
 		try {
 			UsuarioVO user = getObjectFomTela();
 			valida(user);
-			getUsuarioDAO().insert(user);								
-			limpar();
-			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
-					JOptionPane.INFORMATION_MESSAGE);					
+			if(!getUsuarioDAO().existeNome(user.getNome())){
+				getUsuarioDAO().insert(user);								
+				limpar();
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
+						JOptionPane.INFORMATION_MESSAGE);					
+			}else{
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO,"Nome"),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
+				campoNome.requestFocus();
+				campoNome.setText("");
+			}
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (SQLException e) {
@@ -273,7 +279,7 @@ public class TelaUsuario extends JInternalFrame {
 		}
 	}
 
-	public void setObjectToTela(UsuarioVO user) throws ValidacaoException{
+	public void setObjectToTela(UsuarioVO user){
 		campoNome.setText(user.getNome());
 		campoSenha.setText(user.getSenha());
 		this.usuario = user;

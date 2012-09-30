@@ -295,9 +295,20 @@ public class TelaMenu extends JFrame{
 			fileChooser.setCurrentDirectory(new File(new File(".").getCanonicalPath()));
 			if (fileChooser.showSaveDialog(fileChooser) == javax.swing.JFileChooser.APPROVE_OPTION) {
 				File arquivoSelecionado = fileChooser.getSelectedFile();
-				getArquivoBO().exportarArquivo(arquivoSelecionado.getAbsolutePath());
+				File arquivoBackup = new File(arquivoSelecionado.getAbsolutePath());
+				if(arquivoBackup.exists()){
+					Object[] options = { Mensagem.SIM, Mensagem.NAO };
+					int res = JOptionPane.showOptionDialog(this.getDesktop().getSelectedFrame(), Mensagem.ARQUIVO_JA_EXISTENTE, Mensagem.CONFIRMA,
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+						if (res != JOptionPane.YES_OPTION) {
+							return;
+						}
+				}
+				getArquivoBO().exportarArquivo(arquivoBackup);
 				JOptionPane.showMessageDialog(this, Mensagem.ARQUIVO_EXPORTADO, Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
 			}
+		} catch (ValidacaoException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (IOException e) {
 			logger.error(Mensagem.ERRO_IMPORTACAO_ARQUIVO, e);
 			JOptionPane.showMessageDialog(this, Mensagem.ERRO_IMPORTACAO_ARQUIVO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
@@ -306,7 +317,7 @@ public class TelaMenu extends JFrame{
 			JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
-	
+		
 	private void restaurarBackup() {
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.addChoosableFileFilter(new MyFilter());
@@ -320,7 +331,6 @@ public class TelaMenu extends JFrame{
 				if (res == JOptionPane.YES_OPTION) {
 					getArquivoBO().importarArquivo(arquivoSelecionado);
 					JOptionPane.showMessageDialog(this, Mensagem.ARQUIVO_IMPORTADO, Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
-					JOptionPane.showMessageDialog(this, Mensagem.REINICIAR_APLICACAO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 				}
 			} catch (ValidacaoException e) {
 				JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);

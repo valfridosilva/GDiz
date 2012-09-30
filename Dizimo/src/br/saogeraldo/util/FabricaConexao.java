@@ -18,32 +18,35 @@ public class FabricaConexao {
 	
 	public static Connection getConexao() throws SQLException {
 		if(conexao == null || conexao.isClosed()){
-			ResourceBundle rb = ResourceBundle.getBundle("br.saogeraldo.util.banco");  
-	        driver = rb.getString("driver");
-	        url = rb.getString("url");
-	        caminhoBD = rb.getString("caminho");
-	        user = rb.getString("user"); 
-	        password = rb.getString("password"); 
-			try {
-				Class.forName(driver);
-			} catch (ClassNotFoundException e) {
-				logger.error("Erro ao carregar driver do banco de dados.",e);
-			}
-			conexao = DriverManager.getConnection(url+caminhoBD, user, password);			
+			carregaBD();			
 		}			
 		return conexao;		
 	}	
+	
+	private static void carregaBD() throws SQLException {
+		ResourceBundle rb = ResourceBundle.getBundle("br.saogeraldo.util.banco");
+		driver = rb.getString("driver");
+		url = rb.getString("url");
+		caminhoBD = rb.getString("caminho");
+		user = rb.getString("user");
+		password = rb.getString("password");
+		try {
+			Class.forName(driver);
+		} catch (ClassNotFoundException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+		}
+		conexao = DriverManager.getConnection(url + caminhoBD+rb.getString("shutdown"), user, password);
+	}
 	
 	public static void close(){
 		if(conexao != null){
 			try {
 				conexao.close();
 			} catch (SQLException e) {
-				
+				logger.error(Mensagem.ERRO_BANCO_DADOS, e);
 			}finally{
 				conexao=null;
 			}
 		}
 	}
-	
 }

@@ -72,7 +72,7 @@ public class UsuarioDAO {
 	public List<UsuarioVO> getUsuarioByName(String nome) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<UsuarioVO> lista = new ArrayList<UsuarioVO>();
-		String sql = "SELECT * FROM usuario WHERE nome LIKE ?";
+		String sql = "SELECT * FROM usuario WHERE nome LIKE ? and idUsuario <> 1";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, nome+"%");
 		UsuarioVO user = null;		
@@ -86,5 +86,20 @@ public class UsuarioDAO {
 		}
 		ps.close();
 		return lista;		
+	}
+	
+	public boolean existeNome(String nome) throws SQLException {
+		boolean status = false;
+		con = FabricaConexao.getConexao();
+		String sql = "SELECT idUsuario FROM usuario WHERE nome = ?";
+		ps = con.prepareStatement(sql);
+		ps.setString(1, nome);
+
+		ResultSet rs = ps.executeQuery();
+		if (rs.next()) {
+			status = true;
+		}
+		ps.close();
+		return status;
 	}
 }

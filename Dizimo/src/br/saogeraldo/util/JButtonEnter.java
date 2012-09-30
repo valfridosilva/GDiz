@@ -39,7 +39,6 @@ public class JButtonEnter extends JButton {
 	public JButtonEnter(String arg0) {
 		super(arg0);
 		addListenerKeyEnter();
-		setToolTipText(arg0);
 	}
 	
 	private void addListenerKeyEnter(){

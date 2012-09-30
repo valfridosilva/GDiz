@@ -23,12 +23,9 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.Logger;
-
 import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.ModeloRelatorio;
-import br.saogeraldo.util.ValidacaoException;
 
 public class TelaListagemUsuario extends JInternalFrame {
 
@@ -36,7 +33,6 @@ public class TelaListagemUsuario extends JInternalFrame {
 	private JTable tabela;
 	private ModeloRelatorio modelo; 
 	private Map<Integer, UsuarioVO> mapa;
-	private static Logger logger = Logger.getLogger(TelaListagemUsuario.class);
 		
 	public TelaListagemUsuario(TelaMenu telaMenu, List<UsuarioVO> lista, final TelaUsuario telaUsuario){
 		super("Click na linha desejada", true, true, false, false);
@@ -109,11 +105,7 @@ public class TelaListagemUsuario extends JInternalFrame {
 	private void trataEvento(final TelaUsuario tela) {
 		int linha = tabela.getSelectedRow();
 		tela.setVisible(true);
-		try {
-			tela.setObjectToTela(mapa.get(linha));
-		} catch (ValidacaoException e1) {
-			logger.debug(e1.getMessage(), e1);
-		}
+		tela.setObjectToTela(mapa.get(linha));
 		tela.habilitaBotoes(false);
 		voltar();
 	}	

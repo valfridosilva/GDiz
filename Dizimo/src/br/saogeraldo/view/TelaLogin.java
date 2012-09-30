@@ -48,11 +48,7 @@ public class TelaLogin extends JFrame {
 		rotuloSenha = new JLabel("    Senha:", JLabel.CENTER);
 		rotuloSenha.setToolTipText("Senha");
 		campoSenha = new JPasswordField(20);
-		campoSenha.setText("123");
-		campoSenha.setToolTipText("Senha");
 		campoUsuario = new JTextField(20);
-		campoUsuario.setText("valfrido");
-		campoUsuario.setToolTipText("Usuário");
 		botaoLogar = new JButtonEnter("Entrar");
 		botaoSair = new JButtonEnter("Sair");
 

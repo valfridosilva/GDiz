@@ -276,7 +276,7 @@ public class TelaDizimista extends JInternalFrame {
 	private Date getDate(JFormattedTextField campoData, JLabel labelData) throws ValidacaoException{
 		if (campoData.getText().equals(campoData.getValue())) {
 			try {
-				return DataUtil.convertStringToDate(campoData.getText(), DataUtil.PATTERN_DDMMYYYY);
+				return DataUtil.convertStringToDate(campoData.getText());
 			} catch (ParseException e) {
 				campoData.requestFocus();
 				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoData.getText(),labelData.getToolTipText()));
@@ -336,7 +336,7 @@ public class TelaDizimista extends JInternalFrame {
 				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);					
 			}else{
-				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO,"Código"),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
 				campoCodigo.requestFocus();
 				campoCodigo.setText("");
 			}	
@@ -447,25 +447,13 @@ public class TelaDizimista extends JInternalFrame {
 		}
 	}
 
-	public void setObjectToTela(DizimistaVO dz) throws ValidacaoException{
+	public void setObjectToTela(DizimistaVO dz){
 		campoNome.setText(dz.getNome());
 		campoCodigo.setText(String.valueOf(dz.getIdDizimista()));
 		campoConjugue.setText(dz.getNomeConjugue());		
-		try {
-			campoDataNascimento.setValue(DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY));
-		} catch (ParseException e) {
-			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimento.getText(), labelDataNascimento.getToolTipText()));
-		}
-		try {
-			campoDataCasamento.setValue(DataUtil.convertDateToString(dz.getDtCasamento(), DataUtil.PATTERN_DDMMYYYY));
-		} catch (ParseException e) {
-			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataCasamento.getText(), labelDataCasamento.getToolTipText()));
-		}
-		try {
-			campoDataNascimentoConjugue.setValue(DataUtil.convertDateToString(dz.getDtNascimentoConjugue(), DataUtil.PATTERN_DDMMYYYY));
-		} catch (ParseException e) {
-			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataNascimentoConjugue.getText(), labelDataNascimentoConjugue.getToolTipText()));
-		}
+		campoDataNascimento.setValue(DataUtil.convertDateToString(dz.getDtNascimento()));
+		campoDataCasamento.setValue(DataUtil.convertDateToString(dz.getDtCasamento()));
+		campoDataNascimentoConjugue.setValue(DataUtil.convertDateToString(dz.getDtNascimentoConjugue()));
 		campoEndereco.setText(dz.getEndereco());		
 		campoTelefone.setValue(dz.getTelefone());
 		dizimista = dz;

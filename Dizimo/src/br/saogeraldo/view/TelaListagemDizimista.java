@@ -8,7 +8,6 @@ import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseAdapter;
 import java.awt.event.MouseEvent;
-import java.text.ParseException;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -24,13 +23,10 @@ import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
 import javax.swing.table.TableColumnModel;
 
-import org.apache.log4j.Logger;
-
 import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.util.DataUtil;
 import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.ModeloRelatorio;
-import br.saogeraldo.util.ValidacaoException;
 
 public class TelaListagemDizimista extends JInternalFrame {
 
@@ -38,7 +34,6 @@ public class TelaListagemDizimista extends JInternalFrame {
 	private JTable tabela;
 	private ModeloRelatorio modelo; 
 	private Map<Integer, DizimistaVO> mapa;
-	private static Logger logger = Logger.getLogger(TelaListagemDizimista.class);
 	
 	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista){
 		super("Listagem", true, true, true, true);
@@ -132,13 +127,9 @@ public class TelaListagemDizimista extends JInternalFrame {
 	public Object[] transformaToArray(DizimistaVO dz) {		
 		Object[] linha = new Object[3];
 		int index = 0;
-		try {
-			linha[index++] = dz.getIdDizimista();
-			linha[index++] = dz.getNome();
-			linha[index++] = DataUtil.convertDateToString(dz.getDtNascimento(), DataUtil.PATTERN_DDMMYYYY);
-		} catch (ParseException e) {
-			logger.error(e);
-		}
+		linha[index++] = dz.getIdDizimista();
+		linha[index++] = dz.getNome();
+		linha[index++] = DataUtil.convertDateToString(dz.getDtNascimento());
 		return linha;
 	}
 	
@@ -156,11 +147,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 	private void trataEvento(final TelaDizimista tela) {
 		int linha = tabela.getSelectedRow();
 		tela.setVisible(true);
-		try {
-			tela.setObjectToTela(mapa.get(linha));
-		} catch (ValidacaoException e1) {
-			logger.debug(e1.getMessage(), e1);
-		}
+		tela.setObjectToTela(mapa.get(linha));
 		tela.habilitaBotoes(false);
 		voltar();
 	}	

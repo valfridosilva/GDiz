@@ -30,12 +30,15 @@ public class ArquivoBO {
 		}
 	}
 	
-	public void exportarArquivo(String pathFile) throws RegraDeNegocioException, IOException{
+	public void exportarArquivo(File arquivo) throws RegraDeNegocioException, ValidacaoException, IOException{
 		FileOutputStream outputStream = null;
 		try{
+			if(!arquivo.canWrite()){
+				throw new ValidacaoException(Mensagem.PASTA_SEM_PERMISSAO_ESCRITA);
+			}
 			FabricaConexao.close();
 			byte[] bytesFile = IOUtils.toByteArray(new FileInputStream(FILE_PATH));
-			outputStream = new FileOutputStream(pathFile);
+			outputStream = new FileOutputStream(arquivo);
 			IOUtils.write(bytesFile, outputStream);
 		}finally{
 			IOUtils.closeQuietly(outputStream);
