@@ -28,7 +28,7 @@ public class RelatorioBO{
 		if(dizimistas.isEmpty()){
 			throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 		}
-		path = "C:/Dizimo/Rel_Aniversario.jasper";
+		path = "./Rel_Aniversario.jasper";
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}
 	
@@ -41,7 +41,7 @@ public class RelatorioBO{
 		if(dizimistas.isEmpty()){
 			throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 		}
-		path = "C:/Dizimo/Rel_Casamento.jasper";
+		path = "./Rel_Casamento.jasper";
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}
 	
@@ -52,7 +52,7 @@ public class RelatorioBO{
 		if(dizimistas.isEmpty()){
 			throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 		}
-		path = "C:/Dizimo/Rel_Aniversario.jasper";
+		path = "./Rel_Aniversario.jasper";
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}	
 	 
@@ -62,7 +62,7 @@ public class RelatorioBO{
 		if(dizimistas.isEmpty()){
 			throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 		}
-		path = "C:/Dizimo/Rel_Recadastramento.jasper";
+		path = "./Rel_Recadastramento.jasper";
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}	
 }
