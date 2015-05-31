@@ -4,6 +4,14 @@ public class UsuarioVO {
 	private int idUsuario;
 	private String nome;
 	private String senha;
+	
+	public UsuarioVO(int idUsuario, String nome) {
+		this.idUsuario = idUsuario;
+		this.nome = nome;
+	}
+	public UsuarioVO() {
+	
+	}
 
 	public int getIdUsuario() {
 		return idUsuario;

@@ -19,16 +19,20 @@ public class DizimistaDAO {
 	 */
 	public void insert(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();				
-		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, nomeConjugue, dtNascimentoConjugue, endereco, telefone, dtCasamento) VALUES(?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, endereco, telefone, dtCasamento, nomeConjuge, idConjugeDizimista) VALUES(?,?,?,?,?,?,?,?)";
 		ps = con.prepareStatement(sql);
 		ps.setInt(1, dz.getIdDizimista());		
 		ps.setString(2, dz.getNome());		
 		ps.setDate(3, new java.sql.Date(dz.getDtNascimento().getTime()));
-		ps.setString(4, dz.getNomeConjugue());		
-		ps.setDate(5, (java.sql.Date)dz.getDtNascimentoConjugue());
-		ps.setString(6, dz.getEndereco());
-		ps.setString(7, dz.getTelefone());
-		ps.setDate(8, (java.sql.Date)dz.getDtCasamento());
+		ps.setString(4, dz.getEndereco());
+		ps.setString(5, dz.getTelefone());
+		ps.setDate(6, (java.sql.Date)dz.getDtCasamento());
+		ps.setString(7, dz.getNomeConjuge());
+		if(dz.getIdConjugeDizimista() == null){
+			ps.setNull(8, java.sql.Types.INTEGER);
+		}else{
+			ps.setInt(8, dz.getIdConjugeDizimista());
+		}
 
 		ps.execute();
 		ps.close();
@@ -40,15 +44,19 @@ public class DizimistaDAO {
 	 */
 	public void update(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();		
-		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, nomeConjugue = ?, dtNascimentoConjugue = ?, endereco = ?, telefone = ?, dtCasamento = ? WHERE idDizimista = ?";
+		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, endereco = ?, telefone = ?, dtCasamento = ?, nomeConjuge = ?, idConjugeDizimista = ? WHERE idDizimista = ?";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dz.getNome());				
 		ps.setDate(2, new java.sql.Date(dz.getDtNascimento().getTime()));
-		ps.setString(3, dz.getNomeConjugue());				
-		ps.setDate(4, (java.sql.Date)dz.getDtNascimentoConjugue());
-		ps.setString(5, dz.getEndereco());		
-		ps.setString(6, dz.getTelefone());
-		ps.setDate(7, (java.sql.Date)dz.getDtCasamento());
+		ps.setString(3, dz.getEndereco());		
+		ps.setString(4, dz.getTelefone());
+		ps.setDate(5, (java.sql.Date)dz.getDtCasamento());
+		ps.setString(6, dz.getNomeConjuge());	
+		if(dz.getIdConjugeDizimista() == null){
+			ps.setNull(7, java.sql.Types.INTEGER);
+		}else{
+			ps.setInt(7, dz.getIdConjugeDizimista());
+		}
 		ps.setInt(8, dz.getIdDizimista());
 
 		ps.executeUpdate();
@@ -86,11 +94,14 @@ public class DizimistaDAO {
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
-			dz.setNomeConjugue(rs.getString("nomeConjugue"));			
-			dz.setDtNascimentoConjugue(rs.getDate("dtNascimentoConjugue"));
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtCasamento(rs.getDate("dtCasamento"));			
+			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
+			if(rs.wasNull()){
+				dz.setIdConjugeDizimista(null);
+			}
 		}
 		ps.close();
 		return dz;		
@@ -115,11 +126,11 @@ public class DizimistaDAO {
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
-			dz.setNomeConjugue(rs.getString("nomeConjugue"));			
-			dz.setDtNascimentoConjugue(rs.getDate("dtNascimentoConjugue"));
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));			
 			dz.setDtCasamento(rs.getDate("dtCasamento"));	
+			dz.setNomeConjuge(rs.getString("nomeConjuge"));		
+			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
 			lista.add(dz);
 		}
 		ps.close();
@@ -185,7 +196,7 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getCasamentoByDay(String dtInicio, String dtFim) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT nome, nomeConjugue, dtCasamento FROM dizimista WHERE dtCasamento IS NOT NULL AND SUBSTRING(dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtCasamento,6)";
+		String sql = "SELECT nome, dtCasamento, nomeConjugue, idConjugeDizimista FROM dizimista WHERE dtCasamento IS NOT NULL AND SUBSTRING(dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtCasamento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);		
@@ -195,8 +206,9 @@ public class DizimistaDAO {
 		while(rs.next()){		
 			dz = new DizimistaVO();			
 			dz.setNome(rs.getString("nome"));	
-			dz.setNomeConjugue(rs.getString("nomeConjugue"));	
 			dz.setDtCasamento(rs.getDate("dtCasamento"));				
+			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
 			lista.add(dz);
 		}
 		ps.close();
@@ -219,11 +231,11 @@ public class DizimistaDAO {
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
-			dz.setNomeConjugue(rs.getString("nomeConjugue"));			
-			dz.setDtNascimentoConjugue(rs.getDate("dtNascimentoConjugue"));
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtCasamento(rs.getDate("dtCasamento"));		
+			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
 			todos.add(dz);
 		}
 		ps.close();

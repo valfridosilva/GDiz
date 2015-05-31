@@ -42,14 +42,14 @@ public class TelaMenu extends JFrame{
 	private TelaUsuario telaUsuario;
 	private ArquivoBO arquivoBO;
 	private DizimistaDAO dizimistaDAO;
-	public final Integer ESPACO_ENTRE_JANELA = 120;
+	public final Integer ESPACO_ENTRE_JANELA = 90;
 	private static Logger logger = Logger.getLogger(TelaMenu.class);
 	 
 	//método construtor  
 	public TelaMenu() {
 		super("Controle de Dizimista");	
 		
-		logo = new ImageIcon(getClass().getClassLoader().getResource("br/saogeraldo/util/logo.png")).getImage();
+		logo = new ImageIcon(getClass().getClassLoader().getResource("logo.png")).getImage();
 		desktop = new BackgroundedDesktopPane(logo);	
 		add(desktop);
 		
@@ -103,7 +103,7 @@ public class TelaMenu extends JFrame{
 		
 		menuCadastro.add(manterCliente);
 		
-		JMenuItem todos = new JMenuItem("Pesquisar (Todos)");
+		JMenuItem todos = new JMenuItem("Listar todos");
 		todos.setMnemonic('P');
 		
 		todos.addActionListener(new ActionListener() {

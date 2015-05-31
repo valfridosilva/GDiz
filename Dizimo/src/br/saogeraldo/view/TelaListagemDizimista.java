@@ -38,6 +38,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista){
 		super("Listagem", true, true, true, true);
 		telaMenu.addJanela(this);
+		
 		modelo = new ModeloRelatorio(new String[]{ "Cod", "Nome", "Data Nascimento"});
 		mapa = new HashMap<Integer, DizimistaVO>();		
 		int index = 0;
@@ -48,6 +49,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 		}	
 		
 		tabela = new JTable(modelo);
+		tabela.setAutoCreateRowSorter(true);
 		tabela.setRowHeight(22); // tamanho da linha
 		dimensionaColuna(tabela.getColumnModel()); 
 		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 

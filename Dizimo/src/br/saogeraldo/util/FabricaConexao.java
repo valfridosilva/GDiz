@@ -24,7 +24,7 @@ public class FabricaConexao {
 	}	
 	
 	private static void carregaBD() throws SQLException {
-		ResourceBundle rb = ResourceBundle.getBundle("br.saogeraldo.util.banco");
+		ResourceBundle rb = ResourceBundle.getBundle("banco");
 		driver = rb.getString("driver");
 		url = rb.getString("url");
 		caminhoBD = rb.getString("caminho");

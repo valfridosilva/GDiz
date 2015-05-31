@@ -5,12 +5,12 @@ import java.util.Date;
 public class DizimistaVO {
 	private int idDizimista;
 	private String nome;
-	private String nomeConjugue;
 	private Date dtNascimento;
-	private Date dtNascimentoConjugue;
 	private String endereco;
 	private String telefone;
 	private Date dtCasamento;
+	private String nomeConjuge;
+	private Integer idConjugeDizimista;
 
 	public int getIdDizimista() {
 		return idDizimista;
@@ -44,12 +44,12 @@ public class DizimistaVO {
 		this.telefone = telefone;
 	}
 
-	public String getNomeConjugue() {
-		return nomeConjugue;
+	public String getNomeConjuge() {
+		return nomeConjuge;
 	}
 
-	public void setNomeConjugue(String nomeConjugue) {
-		this.nomeConjugue = nomeConjugue;
+	public void setNomeConjuge(String nomeConjuge) {
+		this.nomeConjuge = nomeConjuge;
 	}
 
 	public Date getDtNascimento() {
@@ -60,20 +60,20 @@ public class DizimistaVO {
 		this.dtNascimento = dtNascimento;
 	}
 
-	public Date getDtNascimentoConjugue() {
-		return dtNascimentoConjugue;
-	}
-
-	public void setDtNascimentoConjugue(Date dtNascimentoConjugue) {
-		this.dtNascimentoConjugue = dtNascimentoConjugue;
-	}
-
 	public Date getDtCasamento() {
 		return dtCasamento;
 	}
 
 	public void setDtCasamento(Date dataCasamento) {
 		this.dtCasamento = dataCasamento;
+	}
+	
+	public Integer getIdConjugeDizimista() {
+		return idConjugeDizimista;
+	}
+	
+	public void setIdConjugeDizimista(Integer idConjugeDizimista) {
+		this.idConjugeDizimista = idConjugeDizimista;
 	}
 
 }
