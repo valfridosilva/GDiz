@@ -463,7 +463,7 @@ public class TelaDizimista extends JInternalFrame {
 		}
 	}
 	
-	private void validaDizimista(DizimistaVO dizimista) throws ValidacaoException {
+	private void validaDizimista(DizimistaVO dizimista) throws ValidacaoException, SQLException {
 		if (dizimista.getIdDizimista()==0) {
 			campoCodigo.requestFocus();
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelCodigo.getToolTipText()));
@@ -484,6 +484,11 @@ public class TelaDizimista extends JInternalFrame {
 			if(dizimista.getIdConjugeDizimista() == null){
 				campoCodigoConjuge.requestFocus();
 				throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,labelCodigoConjuge.getToolTipText()));
+			}
+			DizimistaVO dizimistaConjuge = dizimistaDAO.getDizimistaByCodigo(dizimista.getIdConjugeDizimista());
+			if(dizimistaConjuge == null){
+				campoCodigoConjuge.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CODIGO_DIZIMISTA_INVALIDO,dizimista.getIdConjugeDizimista()));
 			}
 		}
 		if(radioConjugeNaoDizimista.isSelected()){
