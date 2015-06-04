@@ -43,7 +43,7 @@ public class TelaPesquisa extends JInternalFrame {
 	private static Logger logger = Logger.getLogger(TelaPesquisa.class);
 	
 	public TelaPesquisa(TelaMenu telaMenu, TipoPesquisa tipoPesquisa) {
-		super("Casamento", true, true, true, true);
+		super(tipoPesquisa.getDescricao(), true, true, true, true);
 		
 		this.tipoPesquisa = tipoPesquisa;
 		telaMenu.addJanela(this);

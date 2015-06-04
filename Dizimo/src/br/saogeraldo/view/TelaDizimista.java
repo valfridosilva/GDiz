@@ -47,6 +47,7 @@ public class TelaDizimista extends JInternalFrame {
 	private JButton botaoAlterar;
 	private JButton botaoExcluir;
 	private JButton botaoLimpar;
+	private JButton botaoCarregar;
 	private JRadioButton radioConjugeDizimista;
 	private JRadioButton radioConjugeNaoDizimista;
 	private ButtonGroup grupo;
@@ -97,6 +98,8 @@ public class TelaDizimista extends JInternalFrame {
 		botaoPesquisarPorNome.setToolTipText("Pesquisar por Nome");
 		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
 		botaoPesquisarPorCodigo.setToolTipText("Pesquisar por Código");
+		botaoCarregar = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("carregar.png")));
+		botaoCarregar.setToolTipText("Carregar Cônjuge Dizimista");
 		botaoSalvar = new JButtonEnter(Mensagem.LABEL_SALVAR);
 		botaoAlterar = new JButtonEnter(Mensagem.LABEL_ALTERAR);
 		botaoExcluir = new JButtonEnter(Mensagem.LABEL_EXCLUIR);
@@ -210,10 +213,18 @@ public class TelaDizimista extends JInternalFrame {
 			}
 		});
 		
+		botaoCarregar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				carregarDizimista();
+			}
+
+		});
+		
 		radioConjugeDizimista.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				campoCodigoConjuge.setEditable(true);
 				campoNomeConjuge.setEditable(false);
+				botaoCarregar.setEnabled(true);
 				campoNomeConjuge.setText("");
 			}
 		});
@@ -222,6 +233,7 @@ public class TelaDizimista extends JInternalFrame {
 			public void itemStateChanged(ItemEvent arg0) {
 				campoNomeConjuge.setEditable(true);
 				campoCodigoConjuge.setEditable(false);
+				botaoCarregar.setEnabled(false);
 				campoCodigoConjuge.setText("");
 			}
 		});
@@ -249,12 +261,15 @@ public class TelaDizimista extends JInternalFrame {
 		jpanel.add(labelConjugeDizimista, cellconstraints.xy(2, 14));
 		jpanel.add(radioConjugeDizimista, cellconstraints.xy(4, 14));	
 		jpanel.add(radioConjugeNaoDizimista, cellconstraints.xy(6, 14));	
-	
-		jpanel.add(labelNomeConjuge, cellconstraints.xy(2, 16));
-		jpanel.add(campoNomeConjuge, cellconstraints.xyw(4, 16, 11));	
 		
-		jpanel.add(labelCodigoConjuge, cellconstraints.xy(2, 18));
-		jpanel.add(campoCodigoConjuge, cellconstraints.xyw(4, 18, 3));	
+		jpanel.add(labelCodigoConjuge, cellconstraints.xy(2, 16));
+		jpanel.add(campoCodigoConjuge, cellconstraints.xyw(4, 16, 3));	
+		jpanel.add(botaoCarregar, cellconstraints.xy(8, 16));
+	
+		jpanel.add(labelNomeConjuge, cellconstraints.xy(2, 18));
+		jpanel.add(campoNomeConjuge, cellconstraints.xyw(4, 18, 11));	
+		
+		
 		return jpanel;
 	}
 	
@@ -307,6 +322,7 @@ public class TelaDizimista extends JInternalFrame {
 			dz.setIdConjugeDizimista(null);
 		}else{
 			dz.setIdConjugeDizimista(Integer.parseInt(campoCodigoConjuge.getText()));
+			dz.setNomeConjuge(null);
 		}
 	
 		return dz;
@@ -448,7 +464,7 @@ public class TelaDizimista extends JInternalFrame {
 					setObjectToTela(dizimista);
 					habilitaBotoes(false);
 				} else {
-					JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+					JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.NENHUM_DIZIMISTA_ENCONTRADO,campoCodigo.getText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 				}
 			} else {
 				campoCodigo.requestFocus();
@@ -461,6 +477,29 @@ public class TelaDizimista extends JInternalFrame {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
 			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
+	}
+	
+	private void carregarDizimista() {
+		try {
+			if (!campoCodigoConjuge.getText().trim().isEmpty()) {
+				DizimistaVO dizimista = getDizimistaDAO().getDizimistaByCodigo(Integer.parseInt(campoCodigoConjuge.getText()));
+				if(dizimista != null){
+					campoNomeConjuge.setText(dizimista.getNome());
+				} else {
+					JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.NENHUM_DIZIMISTA_ENCONTRADO, campoCodigoConjuge.getText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+				}
+			} else {
+			campoCodigoConjuge.requestFocus();
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.CAMPO_PESQUISA,labelCodigoConjuge.getToolTipText()), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		}
+		} catch (SQLException e) {
+			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+		
 	}
 	
 	private void validaDizimista(DizimistaVO dizimista) throws ValidacaoException, SQLException {
@@ -500,21 +539,23 @@ public class TelaDizimista extends JInternalFrame {
 	}
 
 	public void setObjectToTela(DizimistaVO dz){
+		limpar();
 		campoNome.setText(dz.getNome());
 		campoCodigo.setText(String.valueOf(dz.getIdDizimista()));
 		campoDataNascimento.setValue(DataUtil.convertDateToString(dz.getDtNascimento()));
 		campoDataCasamento.setValue(DataUtil.convertDateToString(dz.getDtCasamento()));
 		campoEndereco.setText(dz.getEndereco());		
 		campoTelefone.setValue(dz.getTelefone());
+		
 		if(dz.getIdConjugeDizimista() != null){
 			radioConjugeDizimista.setSelected(true);
-		}
-		if(dz.getNomeConjuge() != null && !dz.getNomeConjuge().trim().isEmpty()){
-			radioConjugeNaoDizimista.setSelected(true);
-		}
-		campoNomeConjuge.setText(dz.getNomeConjuge());	
-		if(dz.getIdConjugeDizimista()!=null){
 			campoCodigoConjuge.setText(String.valueOf(dz.getIdConjugeDizimista()));
+			campoNomeConjuge.setText(dz.getNomeConjuge());
+		}else{
+			if(dz.getNomeConjuge() != null && !dz.getNomeConjuge().trim().isEmpty()){
+				radioConjugeNaoDizimista.setSelected(true);
+				campoNomeConjuge.setText(dz.getNomeConjuge());	
+			}
 		}
 		dizimista = dz;
 	}

@@ -48,6 +48,7 @@ public class TelaMenu extends JFrame{
 	//método construtor  
 	public TelaMenu() {
 		super("Controle de Dizimista");	
+		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
 		logo = new ImageIcon(getClass().getClassLoader().getResource("logo.png")).getImage();
 		desktop = new BackgroundedDesktopPane(logo);	
@@ -221,8 +222,7 @@ public class TelaMenu extends JFrame{
 		}
 		telaPesquisaCasamento.restaura();
 		telaPesquisaCasamento.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight()
-				- (int)(ESPACO_ENTRE_JANELA * 2.5));
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3));
 
 		desktop.moveToFront(telaPesquisaCasamento);
 	}
@@ -234,8 +234,7 @@ public class TelaMenu extends JFrame{
 		}
 		telaPesquisaAniversario.restaura();
 		telaPesquisaAniversario.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight()
-				- (int)(ESPACO_ENTRE_JANELA * 2.5));
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3));
 
 		desktop.moveToFront(telaPesquisaAniversario);
 	}
@@ -280,8 +279,7 @@ public class TelaMenu extends JFrame{
 		}
 		telaUsuario.restaura();
 		telaUsuario.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight()
-				- (ESPACO_ENTRE_JANELA)*2);
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 2.5));
 
 		desktop.moveToFront(telaUsuario);	
 	}

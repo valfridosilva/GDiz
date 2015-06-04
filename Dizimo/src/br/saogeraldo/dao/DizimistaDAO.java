@@ -5,7 +5,9 @@ import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+
 import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.util.FabricaConexao;
 
@@ -26,7 +28,11 @@ public class DizimistaDAO {
 		ps.setDate(3, new java.sql.Date(dz.getDtNascimento().getTime()));
 		ps.setString(4, dz.getEndereco());
 		ps.setString(5, dz.getTelefone());
-		ps.setDate(6, (java.sql.Date)dz.getDtCasamento());
+		if(dz.getDtCasamento() == null){
+			ps.setNull(6, java.sql.Types.DATE);
+		}else{
+			ps.setDate(6, new java.sql.Date(dz.getDtCasamento().getTime()));
+		}
 		ps.setString(7, dz.getNomeConjuge());
 		if(dz.getIdConjugeDizimista() == null){
 			ps.setNull(8, java.sql.Types.INTEGER);
@@ -50,7 +56,11 @@ public class DizimistaDAO {
 		ps.setDate(2, new java.sql.Date(dz.getDtNascimento().getTime()));
 		ps.setString(3, dz.getEndereco());		
 		ps.setString(4, dz.getTelefone());
-		ps.setDate(5, (java.sql.Date)dz.getDtCasamento());
+		if(dz.getDtCasamento() == null){
+			ps.setNull(5, java.sql.Types.DATE);
+		}else{
+			ps.setDate(5, new java.sql.Date(dz.getDtCasamento().getTime()));
+		}
 		ps.setString(6, dz.getNomeConjuge());	
 		if(dz.getIdConjugeDizimista() == null){
 			ps.setNull(7, java.sql.Types.INTEGER);
@@ -84,7 +94,7 @@ public class DizimistaDAO {
 	 */
 	public DizimistaVO getDizimistaByCodigo(int id) throws SQLException {
 		con = FabricaConexao.getConexao();
-		String sql = "SELECT * FROM dizimista WHERE idDizimista = ?";
+		String sql = "SELECT d.*, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista WHERE idDizimista = ?";
 		ps = con.prepareStatement(sql);
 		ps.setInt(1, id);
 		DizimistaVO dz = null;		
@@ -97,7 +107,10 @@ public class DizimistaDAO {
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtCasamento(rs.getDate("dtCasamento"));			
-			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setNomeConjuge(rs.getString("nomeConjugeDizimista"));	
+			if(rs.wasNull()){
+				dz.setNomeConjuge(rs.getString("nomeConjuge"));
+			}
 			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
 			if(rs.wasNull()){
 				dz.setIdConjugeDizimista(null);
@@ -116,7 +129,7 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getDizimistaByName(String nome) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT * FROM dizimista WHERE nome LIKE ?";
+		String sql = "SELECT d.*, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista WHERE nome LIKE ?";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, nome+"%");
 		DizimistaVO dz = null;		
@@ -129,13 +142,20 @@ public class DizimistaDAO {
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));			
 			dz.setDtCasamento(rs.getDate("dtCasamento"));	
-			dz.setNomeConjuge(rs.getString("nomeConjuge"));		
+			dz.setNomeConjuge(rs.getString("nomeConjugeDizimista"));	
+			if(rs.wasNull()){
+				dz.setNomeConjuge(rs.getString("nomeConjuge"));
+			}	
 			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
+			if(rs.wasNull()){
+				dz.setIdConjugeDizimista(null);
+			}
 			lista.add(dz);
 		}
 		ps.close();
 		return lista;		
 	}
+	
 	/**
 	 * Consulta todos os Aniversariantes do mês passado como parâmetro
 	 * @param mes
@@ -196,23 +216,38 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getCasamentoByDay(String dtInicio, String dtFim) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT nome, dtCasamento, nomeConjugue, idConjugeDizimista FROM dizimista WHERE dtCasamento IS NOT NULL AND SUBSTRING(dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtCasamento,6)";
+		String sql = "SELECT d.iddizimista, d.nome, d.dtCasamento, d.nomeConjuge, d.idConjugeDizimista, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista "+
+				"WHERE d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);		
 		DizimistaVO dz = null;		
 		ResultSet rs = ps.executeQuery();
-		
+		HashMap<Integer, DizimistaVO> mapa = new HashMap<Integer, DizimistaVO>();
 		while(rs.next()){		
-			dz = new DizimistaVO();			
+			dz = new DizimistaVO();	
+			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setNome(rs.getString("nome"));	
 			dz.setDtCasamento(rs.getDate("dtCasamento"));				
-			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setNomeConjuge(rs.getString("nomeConjugeDizimista"));	
+			if(rs.wasNull()){
+				dz.setNomeConjuge(rs.getString("nomeConjuge"));
+			}
 			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
-			lista.add(dz);
+			if(rs.wasNull()){
+				dz.setIdConjugeDizimista(null);
+			}
+			if(!mapa.containsKey(dz.getIdDizimista())){
+				if(dz.getIdConjugeDizimista()!= null){
+					mapa.put(dz.getIdConjugeDizimista(), dz);
+				}else{
+					mapa.put(dz.getIdDizimista(), dz);
+				}
+			}
 		}
 		ps.close();
-		return lista;		
+		lista.addAll(mapa.values());		
+		return lista;
 	}
 	
 	/**
@@ -222,7 +257,7 @@ public class DizimistaDAO {
 	 */
 	public List<DizimistaVO> getDizimistaAll() throws SQLException{
 		con = FabricaConexao.getConexao();
-		String sql = "SELECT * FROM dizimista ORDER BY nome";
+		String sql = "SELECT d.*, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista ORDER BY d.nome";
 		ps = con.prepareStatement(sql);		
 		List<DizimistaVO> todos = new ArrayList<DizimistaVO>();		
 		ResultSet rs = ps.executeQuery();
@@ -234,8 +269,14 @@ public class DizimistaDAO {
 			dz.setEndereco(rs.getString("endereco"));
 			dz.setTelefone(rs.getString("telefone"));
 			dz.setDtCasamento(rs.getDate("dtCasamento"));		
-			dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			dz.setNomeConjuge(rs.getString("nomeConjugeDizimista"));	
+			if(rs.wasNull()){
+				dz.setNomeConjuge(rs.getString("nomeConjuge"));	
+			}
 			dz.setIdConjugeDizimista(rs.getInt("idConjugeDizimista"));
+			if(rs.wasNull()){
+				dz.setIdConjugeDizimista(null);
+			}
 			todos.add(dz);
 		}
 		ps.close();
