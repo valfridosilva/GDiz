@@ -33,7 +33,6 @@ public class Mensagem {
 	public static final String CONFIRMA_EXCLUSAO = "Deseja excluir %S ?";	
 	public static final String NENHUM_REGISTRO = "Nenhum registro foi encontrado!";
 	public static final String NENHUM_DIZIMISTA_ENCONTRADO = "Nenhum dizimista com o código %S foi encontrado!";
-	public static final String CODIGO_DIZIMISTA_INVALIDO = "Não existe nenhum dizimista com o código %S!";
 	public static final String ARQUIVO_IMPORTADO = "Arquivo importado com sucesso!";	
 	public static final String ARQUIVO_EXPORTADO = "Arquivo gerado com sucesso!";	
 	public static final String ARQUIVO_EXTENSAO = "Favor selecionar um arquivo no formato %s";

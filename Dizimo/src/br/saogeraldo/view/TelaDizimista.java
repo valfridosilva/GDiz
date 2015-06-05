@@ -435,9 +435,9 @@ public class TelaDizimista extends JInternalFrame {
 						habilitaBotoes(false);
 					} else {
 						TelaListagemDizimista tela = new TelaListagemDizimista(telaMenu, lista, this);
-						tela.setBounds(telaMenu.ESPACO_ENTRE_JANELA / 2, (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.getDesktop().getWidth() - telaMenu.ESPACO_ENTRE_JANELA, telaMenu.getDesktop()
-								.getHeight()
-								- (int)(telaMenu.ESPACO_ENTRE_JANELA * 1.5));
+						tela.setBounds((int)(telaMenu.ESPACO_ENTRE_JANELA), (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), telaMenu.getDesktop().getWidth() - (telaMenu.ESPACO_ENTRE_JANELA*2), telaMenu.getDesktop()
+								.getHeight() - (int)(telaMenu.ESPACO_ENTRE_JANELA * 2));
+						
 						telaMenu.getDesktop().moveToFront(tela);
 					}
 				} else {
@@ -527,7 +527,7 @@ public class TelaDizimista extends JInternalFrame {
 			DizimistaVO dizimistaConjuge = dizimistaDAO.getDizimistaByCodigo(dizimista.getIdConjugeDizimista());
 			if(dizimistaConjuge == null){
 				campoCodigoConjuge.requestFocus();
-				throw new ValidacaoException(String.format(Mensagem.CODIGO_DIZIMISTA_INVALIDO,dizimista.getIdConjugeDizimista()));
+				throw new ValidacaoException(String.format(Mensagem.NENHUM_DIZIMISTA_ENCONTRADO,dizimista.getIdConjugeDizimista()));
 			}
 		}
 		if(radioConjugeNaoDizimista.isSelected()){

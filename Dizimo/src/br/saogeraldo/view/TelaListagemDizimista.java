@@ -86,11 +86,12 @@ public class TelaListagemDizimista extends JInternalFrame {
 		}	
 		
 		tabela = new JTable(modelo);
+		tabela.setAutoCreateRowSorter(true);
 		tabela.setRowHeight(22); // tamanho da linha
 		dimensionaColuna(tabela.getColumnModel()); 
 		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 
 		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		tabela.setPreferredScrollableViewportSize(new Dimension(560,200));	
+		tabela.setPreferredScrollableViewportSize(new Dimension(480,200));	
 		
 		tabela.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {

@@ -79,6 +79,16 @@ public class TelaMenu extends JFrame{
 		sistema.add(restaurarBackup);
 		sistema.addSeparator();
 
+		JMenuItem sobre = new JMenuItem("Sobre");
+		sobre.setMnemonic('B');
+		sobre.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				sobre();
+			}
+		});
+		sistema.add(sobre);
+		sistema.addSeparator();
+
 		JMenuItem sair = new JMenuItem("Sair");
 		sair.setMnemonic('S');
 		sair.addActionListener(new ActionListener() {
@@ -105,7 +115,7 @@ public class TelaMenu extends JFrame{
 		menuCadastro.add(manterCliente);
 		
 		JMenuItem todos = new JMenuItem("Listar todos");
-		todos.setMnemonic('P');
+		todos.setMnemonic('L');
 		
 		todos.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -137,7 +147,7 @@ public class TelaMenu extends JFrame{
 		menuRelatorio.setMnemonic('R');
 		
 		JMenuItem relAniversarioTodos = new JMenuItem("Aniversário (Todos)");
-		relAniversarioTodos.setMnemonic('S');
+		relAniversarioTodos.setMnemonic('N');
 		
 		JMenuItem relAniversario = new JMenuItem("Aniversário");
 		relAniversario.setMnemonic('A');
@@ -200,6 +210,11 @@ public class TelaMenu extends JFrame{
 	}		
 	//fim do construtor     
 	
+	private void sobre() {
+		JOptionPane.showMessageDialog(this, "Versão: 1.1 (2015)\n Desenvolvido por: Valfrido","Sobre", JOptionPane.INFORMATION_MESSAGE, null);
+		
+	}
+
 	private void reportsAll() {
 		try{
 			new RelatorioBO().runAniversarioAll();
@@ -246,7 +261,7 @@ public class TelaMenu extends JFrame{
 				TelaListagemDizimista tela = new TelaListagemDizimista(this, lista);
 				tela.setBounds(this.ESPACO_ENTRE_JANELA / 2, (int) (this.ESPACO_ENTRE_JANELA / 1.5), this.getDesktop().getWidth() - this.ESPACO_ENTRE_JANELA, this.getDesktop()
 						.getHeight()
-						- (int)(this.ESPACO_ENTRE_JANELA * 1.5));
+						- (int)(this.ESPACO_ENTRE_JANELA * 2));
 				this.getDesktop().moveToFront(tela);
 			}else{
 				JOptionPane.showMessageDialog(this, Mensagem.NENHUM_REGISTRO, Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
@@ -267,8 +282,7 @@ public class TelaMenu extends JFrame{
 		}
 		telaDizimista.restaura();
 		telaDizimista.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight()
-				- (int)(ESPACO_ENTRE_JANELA));
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA));
 
 		desktop.moveToFront(telaDizimista);	
 	}
@@ -301,6 +315,8 @@ public class TelaMenu extends JFrame{
 						if (res != JOptionPane.YES_OPTION) {
 							return;
 						}
+				}else{
+					arquivoBackup.createNewFile();
 				}
 				getArquivoBO().exportarArquivo(arquivoBackup);
 				JOptionPane.showMessageDialog(this, Mensagem.ARQUIVO_EXPORTADO, Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
@@ -320,25 +336,28 @@ public class TelaMenu extends JFrame{
 		JFileChooser fileChooser = new JFileChooser();
 		fileChooser.addChoosableFileFilter(new MyFilter());
 		fileChooser.setAcceptAllFileFilterUsed(false);
-		if (fileChooser.showOpenDialog(fileChooser) == javax.swing.JFileChooser.APPROVE_OPTION) {
-			try {
-				File arquivoSelecionado = fileChooser.getSelectedFile();
-				Object[] options = { Mensagem.SIM, Mensagem.NAO };
-				int res = JOptionPane.showOptionDialog(this, Mensagem.CONFIRMA_RESTAURAR_BACKUP, Mensagem.CONFIRMA,
-						JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
-				if (res == JOptionPane.YES_OPTION) {
-					getArquivoBO().importarArquivo(arquivoSelecionado);
-					JOptionPane.showMessageDialog(this, Mensagem.ARQUIVO_IMPORTADO, Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
-				}
-			} catch (ValidacaoException e) {
-				JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-			} catch (IOException e) {
-				logger.error(Mensagem.ERRO_IMPORTACAO_ARQUIVO, e);
-				JOptionPane.showMessageDialog(this, Mensagem.ERRO_IMPORTACAO_ARQUIVO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-			} catch (Exception e) {
-				logger.error(Mensagem.ERRO_SISTEMA, e);
-				JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		fileChooser.setSelectedFile(new File("backup-dizimo"+ArquivoBO.EXTENSION_FILE));
+		try {
+			fileChooser.setCurrentDirectory(new File(new File(".").getCanonicalPath()));
+			if (fileChooser.showOpenDialog(fileChooser) == javax.swing.JFileChooser.APPROVE_OPTION) {
+				
+					File arquivoSelecionado = fileChooser.getSelectedFile();
+					Object[] options = { Mensagem.SIM, Mensagem.NAO };
+					int res = JOptionPane.showOptionDialog(this, Mensagem.CONFIRMA_RESTAURAR_BACKUP, Mensagem.CONFIRMA,
+							JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
+					if (res == JOptionPane.YES_OPTION) {
+						getArquivoBO().importarArquivo(arquivoSelecionado);
+						JOptionPane.showMessageDialog(this, Mensagem.ARQUIVO_IMPORTADO, Mensagem.SUCESSO, JOptionPane.INFORMATION_MESSAGE);
+					}
 			}
+		} catch (ValidacaoException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (IOException e) {
+			logger.error(Mensagem.ERRO_IMPORTACAO_ARQUIVO, e);
+			JOptionPane.showMessageDialog(this, Mensagem.ERRO_IMPORTACAO_ARQUIVO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		} catch (Exception e) {
+			logger.error(Mensagem.ERRO_SISTEMA, e);
+			JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
