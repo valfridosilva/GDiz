@@ -21,24 +21,26 @@ public class DizimistaDAO {
 	 */
 	public void insert(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();				
-		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, endereco, telefone, dtCasamento, nomeConjuge, idConjugeDizimista) VALUES(?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, endereco, telefone, dtCasamento, nomeConjuge, idConjugeDizimista, falecido) VALUES(?,?,?,?,?,?,?,?,?)";
 		ps = con.prepareStatement(sql);
-		ps.setInt(1, dz.getIdDizimista());		
-		ps.setString(2, dz.getNome());		
-		ps.setDate(3, new java.sql.Date(dz.getDtNascimento().getTime()));
-		ps.setString(4, dz.getEndereco());
-		ps.setString(5, dz.getTelefone());
+		int cont = 1;
+		ps.setInt(cont++, dz.getIdDizimista());		
+		ps.setString(cont++, dz.getNome());		
+		ps.setDate(cont++, new java.sql.Date(dz.getDtNascimento().getTime()));
+		ps.setString(cont++, dz.getEndereco());
+		ps.setString(cont++, dz.getTelefone());
 		if(dz.getDtCasamento() == null){
-			ps.setNull(6, java.sql.Types.DATE);
+			ps.setNull(cont++, java.sql.Types.DATE);
 		}else{
-			ps.setDate(6, new java.sql.Date(dz.getDtCasamento().getTime()));
+			ps.setDate(cont++, new java.sql.Date(dz.getDtCasamento().getTime()));
 		}
-		ps.setString(7, dz.getNomeConjuge());
+		ps.setString(cont++, dz.getNomeConjuge());
 		if(dz.getIdConjugeDizimista() == null){
-			ps.setNull(8, java.sql.Types.INTEGER);
+			ps.setNull(cont++, java.sql.Types.INTEGER);
 		}else{
-			ps.setInt(8, dz.getIdConjugeDizimista());
+			ps.setInt(cont++, dz.getIdConjugeDizimista());
 		}
+		ps.setBoolean(cont++, dz.isFalecido());
 
 		ps.execute();
 		ps.close();
@@ -50,24 +52,27 @@ public class DizimistaDAO {
 	 */
 	public void update(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();		
-		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, endereco = ?, telefone = ?, dtCasamento = ?, nomeConjuge = ?, idConjugeDizimista = ? WHERE idDizimista = ?";
+		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, endereco = ?, telefone = ?, dtCasamento = ?, nomeConjuge = ?, idConjugeDizimista = ?, falecido = ? WHERE idDizimista = ?";
 		ps = con.prepareStatement(sql);
-		ps.setString(1, dz.getNome());				
-		ps.setDate(2, new java.sql.Date(dz.getDtNascimento().getTime()));
-		ps.setString(3, dz.getEndereco());		
-		ps.setString(4, dz.getTelefone());
+		int cont = 1;
+		ps.setString(cont++, dz.getNome());				
+		ps.setDate(cont++, new java.sql.Date(dz.getDtNascimento().getTime()));
+		ps.setString(cont++, dz.getEndereco());		
+		ps.setString(cont++, dz.getTelefone());
 		if(dz.getDtCasamento() == null){
-			ps.setNull(5, java.sql.Types.DATE);
+			ps.setNull(cont++, java.sql.Types.DATE);
 		}else{
-			ps.setDate(5, new java.sql.Date(dz.getDtCasamento().getTime()));
+			ps.setDate(cont++, new java.sql.Date(dz.getDtCasamento().getTime()));
 		}
-		ps.setString(6, dz.getNomeConjuge());	
+		ps.setString(cont++, dz.getNomeConjuge());	
 		if(dz.getIdConjugeDizimista() == null){
-			ps.setNull(7, java.sql.Types.INTEGER);
+			ps.setNull(cont++, java.sql.Types.INTEGER);
 		}else{
-			ps.setInt(7, dz.getIdConjugeDizimista());
+			ps.setInt(cont++, dz.getIdConjugeDizimista());
 		}
-		ps.setInt(8, dz.getIdDizimista());
+		ps.setBoolean(cont++, dz.isFalecido());
+		
+		ps.setInt(cont++, dz.getIdDizimista());
 
 		ps.executeUpdate();
 		ps.close();
@@ -102,6 +107,7 @@ public class DizimistaDAO {
 		if(rs.next()){
 			dz = new DizimistaVO();						
 			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setFalecido(rs.getBoolean("falecido"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
@@ -137,6 +143,7 @@ public class DizimistaDAO {
 		while(rs.next()){		
 			dz = new DizimistaVO();
 			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setFalecido(rs.getBoolean("falecido"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
@@ -157,29 +164,6 @@ public class DizimistaDAO {
 	}
 	
 	/**
-	 * Consulta todos os Aniversariantes do mês passado como parâmetro
-	 * @param mes
-	 * @return
-	 * @throws SQLException
-	 */
-	public List<DizimistaVO> getAniversarioByMonth(int mes) throws SQLException {
-		con = FabricaConexao.getConexao();
-		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT nome, dtNascimento FROM dizimista WHERE MONTH(dtNascimento) = ? ORDER BY DAYOFMONTH(dtNascimento)";
-		ps = con.prepareStatement(sql);
-		ps.setInt(1, mes);
-		DizimistaVO dz = null;		
-		ResultSet rs = ps.executeQuery();
-		while(rs.next()){		
-			dz = new DizimistaVO();			
-			dz.setNome(rs.getString("nome"));			
-			dz.setDtNascimento(rs.getDate("dtNascimento"));			
-			lista.add(dz);
-		}
-		ps.close();
-		return lista;		
-	}
-	/**
 	 * Consulta todos os Aniversariantes
 	 * @param dtInicio
 	 * @param dtFim
@@ -189,7 +173,7 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getAniversarioByDay(String dtInicio, String dtFim) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT idDizimista, nome, dtNascimento, telefone FROM dizimista where SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
+		String sql = "SELECT idDizimista, nome, dtNascimento, telefone FROM dizimista where falecido = false AND SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);	
@@ -217,7 +201,7 @@ public class DizimistaDAO {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
 		String sql = "SELECT d.iddizimista, d.nome, d.dtCasamento, d.nomeConjuge, d.idConjugeDizimista, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista "+
-				"WHERE d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
+				"WHERE d.falecido = false AND d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);		
@@ -264,6 +248,7 @@ public class DizimistaDAO {
 		while(rs.next()){
 			DizimistaVO dz = new DizimistaVO();		
 			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setFalecido(rs.getBoolean("falecido"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
@@ -302,6 +287,26 @@ public class DizimistaDAO {
 		}
 		ps.close();
 		return status;
+	}
+	/**
+	 * Recupera todos os dizimistas falecidos
+	 * @return
+	 */
+	public List<DizimistaVO> getDizimistaFalecidoAll() throws SQLException {
+		con = FabricaConexao.getConexao();
+		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
+		String sql = "SELECT * FROM dizimista WHERE falecido = true ORDER BY nome";
+		ps = con.prepareStatement(sql);
+		DizimistaVO dz = null;		
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){		
+			dz = new DizimistaVO();	
+			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setNome(rs.getString("nome"));	
+			lista.add(dz);		
+		}
+		ps.close();
+		return lista;
 	}
 
 }

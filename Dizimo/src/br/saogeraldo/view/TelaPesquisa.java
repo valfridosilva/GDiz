@@ -5,7 +5,6 @@ import java.awt.FlowLayout;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.beans.PropertyVetoException;
-import java.sql.SQLException;
 import java.text.ParseException;
 
 import javax.swing.BorderFactory;
@@ -19,9 +18,6 @@ import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
-
 import br.saogeraldo.negocio.RelatorioBO;
 import br.saogeraldo.util.JButtonEnter;
 import br.saogeraldo.util.Mensagem;
@@ -29,6 +25,9 @@ import br.saogeraldo.util.RegraDeNegocioException;
 import br.saogeraldo.util.RelatorioException;
 import br.saogeraldo.util.TipoPesquisa;
 import br.saogeraldo.util.ValidacaoException;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 public class TelaPesquisa extends JInternalFrame {
 
@@ -88,7 +87,7 @@ public class TelaPesquisa extends JInternalFrame {
 	public JPanel getPanelForm() {
 		
 		FormLayout formlayout = new FormLayout(
-				"2dlu, 20px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 70px, 2dlu, 70px, 2dlu, 70px, 2dlu",
+				"2dlu, 20px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 90px, 2dlu, 70px, 2dlu, 70px, 2dlu",
 				"2dlu, 10px, 5dlu, pref, 5dlu, 10px, 5dlu");
 		JPanel jpanel = new JPanel(formlayout);		
 		jpanel.setBorder(BorderFactory.createTitledBorder("Pesquisa "));
@@ -121,30 +120,27 @@ public class TelaPesquisa extends JInternalFrame {
 		}
 	}
 	
-	private void valida(String dataInicial, String dataFinal) throws ValidacaoException {
-		if (dataInicial.trim().length() != 5){
+	private void valida() throws ValidacaoException {
+		if (campoDataInicial.getValue() == null){
 			campoDataInicial.requestFocus();
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloDataInicial.getToolTipText()));
 		}
-		if (dataFinal.trim().length() != 5){
+		if (campoDataFinal.getValue() == null){
 			campoDataFinal.requestFocus();
 			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloDataFinal.getToolTipText()));
 		}
 	}
 
 
-	public void pesquisar() {					
-		String dataInicial = campoDataInicial.getText();
-		String dataFinal = campoDataFinal.getText();
+	private void pesquisar() {					
 		try {				
-			valida(dataInicial, dataFinal);
-			
+			valida();
 			RelatorioBO relatorio = new RelatorioBO();
 			if(TipoPesquisa.ANIVERSARIO.equals(tipoPesquisa)){
-				relatorio.runAniversario(dataInicial, dataFinal);
+				relatorio.runAniversario(campoDataInicial.getText(), campoDataFinal.getText());
 			}
 			else if(TipoPesquisa.CASAMENTO.equals(tipoPesquisa)){
-				relatorio.runCasamento(dataInicial, dataFinal);
+				relatorio.runCasamento(campoDataInicial.getText(), campoDataFinal.getText());
 			}
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
@@ -153,9 +149,6 @@ public class TelaPesquisa extends JInternalFrame {
 		} catch (RelatorioException e) {
 			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
 			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		} catch (SQLException e) {
-			logger.error(Mensagem.ERRO_BANCO_DADOS, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_BANCO_DADOS, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		} catch (Exception e) {
 			logger.error(Mensagem.ERRO_SISTEMA, e);
 			JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);

@@ -25,19 +25,19 @@ import javax.swing.table.TableColumnModel;
 
 import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.util.Mensagem;
-import br.saogeraldo.util.ModeloRelatorio;
+import br.saogeraldo.util.ModeloTabela;
 
 public class TelaListagemUsuario extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;
-	private ModeloRelatorio modelo; 
+	private ModeloTabela modelo; 
 	private Map<Integer, UsuarioVO> mapa;
 		
 	public TelaListagemUsuario(TelaMenu telaMenu, List<UsuarioVO> lista, final TelaUsuario telaUsuario){
 		super("Click na linha desejada", true, true, false, false);
 		telaMenu.addJanela(this);
-		modelo = new ModeloRelatorio(new String[]{ "Nome"});
+		modelo = new ModeloTabela(new String[]{ "Nome"});
 		mapa = new HashMap<Integer, UsuarioVO>();		
 		int index = 0;
 		for(UsuarioVO obj: lista){
@@ -65,7 +65,7 @@ public class TelaListagemUsuario extends JInternalFrame {
 		Action enterAction = new AbstractAction() {		
 			private static final long serialVersionUID = 1L;
 			public void actionPerformed(ActionEvent e) {
-				modelo = (ModeloRelatorio)((JTable) e.getSource()).getModel();
+				modelo = (ModeloTabela)((JTable) e.getSource()).getModel();
 				trataEvento(telaUsuario);
 			}
 		};

@@ -2,7 +2,7 @@
 <!-- Created with iReport - A designer for JasperReports -->
 <!DOCTYPE jasperReport PUBLIC "//JasperReports//DTD Report Design//EN" "http://jasperreports.sourceforge.net/dtds/jasperreport.dtd">
 <jasperReport
-		 name="Rel_Aniversario"
+		 name="Rel_Casamento"
 		 columnCount="1"
 		 printOrder="Vertical"
 		 orientation="Portrait"
@@ -98,7 +98,7 @@
 			<band height="22"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
-						x="14"
+						x="2"
 						y="0"
 						width="100"
 						height="16"
@@ -111,20 +111,20 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="411"
+						x="393"
 						y="0"
-						width="123"
+						width="100"
 						height="17"
 						key="staticText-3"/>
 					<box></box>
 					<textElement>
 						<font pdfFontName="Helvetica-BoldOblique" size="12" isBold="true" isItalic="true"/>
 					</textElement>
-				<text><![CDATA[Data de Casamento:]]></text>
+				<text><![CDATA[Data Casamento:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
-						x="230"
+						x="213"
 						y="0"
 						width="65"
 						height="16"
@@ -135,13 +135,39 @@
 					</textElement>
 				<text><![CDATA[Conjuge:]]></text>
 				</staticText>
+				<staticText>
+					<reportElement
+						x="499"
+						y="0"
+						width="36"
+						height="17"
+						key="staticText-6"/>
+					<box></box>
+					<textElement>
+						<font pdfFontName="Helvetica-BoldOblique" size="12" isBold="true" isItalic="true"/>
+					</textElement>
+				<text><![CDATA[Anos:]]></text>
+				</staticText>
 			</band>
 		</columnHeader>
 		<detail>
-			<band height="26"  isSplitAllowed="true" >
+			<band height="22"  isSplitAllowed="true" >
+				<rectangle>
+					<reportElement
+						x="2"
+						y="0"
+						width="530"
+						height="20"
+						forecolor="#CCCCCC"
+						backcolor="#CCCCCC"
+						key="rectangle-1">
+							<printWhenExpression><![CDATA[new Boolean($V{COLUMN_COUNT}.intValue() % 2 == 0)]]></printWhenExpression>
+						</reportElement>
+					<graphicElement stretchType="NoStretch"/>
+				</rectangle>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="14"
+						x="2"
 						y="0"
 						width="209"
 						height="18"
@@ -154,7 +180,7 @@
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="230"
+						x="213"
 						y="0"
 						width="178"
 						height="18"
@@ -167,9 +193,9 @@
 				</textField>
 				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="411"
+						x="393"
 						y="0"
-						width="121"
+						width="100"
 						height="18"
 						key="textField"/>
 					<box></box>
@@ -177,6 +203,20 @@
 						<font size="12"/>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[$F{dtCasamento}]]></textFieldExpression>
+				</textField>
+				<textField isStretchWithOverflow="false" pattern="" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+					<reportElement
+						x="499"
+						y="0"
+						width="35"
+						height="18"
+						key="textField-1"/>
+					<box></box>
+					<textElement>
+						<font size="12"/>
+					</textElement>
+				<textFieldExpression   class="java.lang.Integer"><![CDATA[new Integer(Integer.parseInt(new SimpleDateFormat("yyyy").format(new java.util.Date())) - 
+Integer.parseInt(new SimpleDateFormat("yyyy").format($F{dtCasamento})))]]></textFieldExpression>
 				</textField>
 			</band>
 		</detail>

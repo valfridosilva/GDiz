@@ -24,4 +24,14 @@ public class RelatorioUtil{
 		}	
 	}	
 	
+	public void runRelatorio(String path, Map<String, String> param) throws RelatorioException {
+		try {
+			InputStream out = new FileInputStream(path);
+			JasperPrint jp = JasperFillManager.fillReport(out, param);
+			JasperViewer.viewReport(jp, false);
+		} catch (Exception e) {
+			throw new RelatorioException(e);
+		}	
+	}	
+	
 }

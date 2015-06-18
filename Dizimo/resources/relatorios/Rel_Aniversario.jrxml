@@ -85,7 +85,7 @@
 			<band height="16"  isSplitAllowed="true" >
 				<staticText>
 					<reportElement
-						x="59"
+						x="75"
 						y="0"
 						width="49"
 						height="16"
@@ -98,7 +98,7 @@
 				</staticText>
 				<staticText>
 					<reportElement
-						x="364"
+						x="408"
 						y="0"
 						width="85"
 						height="16"
@@ -108,19 +108,6 @@
 						<font pdfFontName="Helvetica-BoldOblique" size="12" isBold="true" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Nascimento:]]></text>
-				</staticText>
-				<staticText>
-					<reportElement
-						x="452"
-						y="0"
-						width="83"
-						height="16"
-						key="staticText-5"/>
-					<box></box>
-					<textElement textAlignment="Center">
-						<font pdfFontName="Helvetica-BoldOblique" size="12" isBold="true" isItalic="true"/>
-					</textElement>
-				<text><![CDATA[Telefone:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
@@ -154,7 +141,7 @@
 				</rectangle>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="59"
+						x="75"
 						y="1"
 						width="302"
 						height="18"
@@ -165,9 +152,9 @@
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$F{nome}]]></textFieldExpression>
 				</textField>
-				<textField isStretchWithOverflow="false" pattern="dd/MM/yyyy" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
+				<textField isStretchWithOverflow="false" pattern="dd/MM" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="364"
+						x="408"
 						y="1"
 						width="85"
 						height="18"
@@ -177,19 +164,6 @@
 						<font size="12"/>
 					</textElement>
 				<textFieldExpression   class="java.util.Date"><![CDATA[$F{dtNascimento}]]></textFieldExpression>
-				</textField>
-				<textField isStretchWithOverflow="false" isBlankWhenNull="true" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="452"
-						y="1"
-						width="83"
-						height="18"
-						key="textField"/>
-					<box></box>
-					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font size="12"/>
-					</textElement>
-				<textFieldExpression   class="java.lang.String"><![CDATA[$F{telefone}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement

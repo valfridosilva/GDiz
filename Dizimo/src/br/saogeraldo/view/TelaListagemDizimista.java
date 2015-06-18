@@ -17,29 +17,31 @@ import javax.swing.Action;
 import javax.swing.InputMap;
 import javax.swing.JButton;
 import javax.swing.JInternalFrame;
+import javax.swing.JLabel;
 import javax.swing.JScrollPane;
 import javax.swing.JTable;
 import javax.swing.KeyStroke;
 import javax.swing.ListSelectionModel;
+import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import br.saogeraldo.bean.DizimistaVO;
-import br.saogeraldo.util.DataUtil;
+import br.saogeraldo.util.Util;
 import br.saogeraldo.util.Mensagem;
-import br.saogeraldo.util.ModeloRelatorio;
+import br.saogeraldo.util.ModeloTabela;
 
 public class TelaListagemDizimista extends JInternalFrame {
 
 	private static final long serialVersionUID = 1L;
 	private JTable tabela;
-	private ModeloRelatorio modelo; 
+	private ModeloTabela modelo; 
 	private Map<Integer, DizimistaVO> mapa;
 	
 	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista){
 		super("Listagem", true, true, true, true);
 		telaMenu.addJanela(this);
 		
-		modelo = new ModeloRelatorio(new String[]{ "Cod", "Nome", "Data Nascimento"});
+		modelo = new ModeloTabela(new String[]{ "Cod", "Nome", "Data Nascimento"});
 		mapa = new HashMap<Integer, DizimistaVO>();		
 		int index = 0;
 		for(DizimistaVO obj: lista){
@@ -54,7 +56,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 		dimensionaColuna(tabela.getColumnModel()); 
 		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 
 		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		tabela.setPreferredScrollableViewportSize(new Dimension(560,200));	
+		tabela.setPreferredScrollableViewportSize(new Dimension(630,200));	
 		
 		setLayout(new FlowLayout());
 		
@@ -69,14 +71,14 @@ public class TelaListagemDizimista extends JInternalFrame {
 		JScrollPane scrollPane = new JScrollPane(tabela);
 		add(scrollPane);
 		add(BorderLayout.SOUTH,botaoVoltar);			
-		setSize(650, 300);
+		setSize(630, 300);
 		setVisible(true);
 	}
 	
-	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista, final TelaDizimista telaDizimista){
+	public TelaListagemDizimista(TelaMenu telaMenu, List<DizimistaVO> lista, final TelaListagem telaListagem){
 		super("Click na linha desejada", true, true, false, false);
 		telaMenu.addJanela(this);
-		modelo = new ModeloRelatorio(new String[]{ "Cod", "Nome", "Data Nascimento"});
+		modelo = new ModeloTabela(new String[]{ "Cod", "Nome", "Data Nascimento"});
 		mapa = new HashMap<Integer, DizimistaVO>();		
 		int index = 0;
 		for(DizimistaVO obj: lista){
@@ -95,7 +97,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 		
 		tabela.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {
-				trataEvento(telaDizimista);				
+				trataEvento(telaListagem);				
 			}
 		});
 		
@@ -103,10 +105,10 @@ public class TelaListagemDizimista extends JInternalFrame {
 		KeyStroke enter = KeyStroke.getKeyStroke(KeyEvent.VK_ENTER, 0);
 		im.put(enter, im.get(KeyStroke.getKeyStroke(KeyEvent.VK_GREATER, 0)));
 		Action enterAction = new AbstractAction() {		
-			private static final long serialVersionUID = -7691518916575740081L;
+			private static final long serialVersionUID = -1L;
 			public void actionPerformed(ActionEvent e) {
-				modelo = (ModeloRelatorio)((JTable) e.getSource()).getModel();
-				trataEvento(telaDizimista);
+				modelo = (ModeloTabela)((JTable) e.getSource()).getModel();
+				trataEvento(telaListagem);
 			}
 		};
 		tabela.getActionMap().put(im.get(enter), enterAction);
@@ -132,7 +134,7 @@ public class TelaListagemDizimista extends JInternalFrame {
 		int index = 0;
 		linha[index++] = dz.getIdDizimista();
 		linha[index++] = dz.getNome();
-		linha[index++] = DataUtil.convertDateToString(dz.getDtNascimento());
+		linha[index++] = Util.convertDateToString(dz.getDtNascimento());
 		return linha;
 	}
 	
@@ -141,17 +143,20 @@ public class TelaListagemDizimista extends JInternalFrame {
 		modelo.getColumn(0).setMaxWidth(50);	
 		modelo.getColumn(2).setMinWidth(120);
 		modelo.getColumn(2).setMaxWidth(120);
+		
+		DefaultTableCellRenderer centerRenderer = new DefaultTableCellRenderer();
+		centerRenderer.setHorizontalAlignment( JLabel.CENTER );
+		modelo.getColumn(2).setCellRenderer(centerRenderer);
 	}
 	
 	private void voltar() {
 		dispose();		
 	}
 
-	private void trataEvento(final TelaDizimista tela) {
+	private void trataEvento(final TelaListagem tela) {
 		int linha = tabela.getSelectedRow();
 		tela.setVisible(true);
 		tela.setObjectToTela(mapa.get(linha));
-		tela.habilitaBotoes(false);
 		voltar();
 	}	
 }

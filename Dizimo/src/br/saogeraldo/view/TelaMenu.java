@@ -12,6 +12,7 @@ import java.sql.SQLException;
 import java.util.List;
 
 import javax.swing.ImageIcon;
+import javax.swing.JComboBox;
 import javax.swing.JDesktopPane;
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -27,7 +28,10 @@ import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.dao.DizimistaDAO;
 import br.saogeraldo.negocio.ArquivoBO;
 import br.saogeraldo.negocio.RelatorioBO;
+import br.saogeraldo.util.ItemValue;
 import br.saogeraldo.util.Mensagem;
+import br.saogeraldo.util.RegraDeNegocioException;
+import br.saogeraldo.util.RelatorioException;
 import br.saogeraldo.util.TipoPesquisa;
 import br.saogeraldo.util.ValidacaoException;
 
@@ -38,11 +42,13 @@ public class TelaMenu extends JFrame{
 	private Image logo;
 	private TelaPesquisa telaPesquisaAniversario;
 	private TelaPesquisa telaPesquisaCasamento;
+	private TelaPesquisaPagamento telaPesquisaPagamento;
 	private TelaDizimista telaDizimista;
+	private TelaFinanceiro telaFinanceiro;
 	private TelaUsuario telaUsuario;
 	private ArquivoBO arquivoBO;
 	private DizimistaDAO dizimistaDAO;
-	public final Integer ESPACO_ENTRE_JANELA = 90;
+	public final Integer ESPACO_ENTRE_JANELA = 85;
 	private static Logger logger = Logger.getLogger(TelaMenu.class);
 	 
 	//método construtor  
@@ -114,6 +120,17 @@ public class TelaMenu extends JFrame{
 		
 		menuCadastro.add(manterCliente);
 		
+		JMenuItem financeiro = new JMenuItem("Financeiro");
+		financeiro.setMnemonic('F');
+		
+		financeiro.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				registrarPagamento();
+			}			
+		});
+		menuCadastro.add(financeiro);
+		menuCadastro.addSeparator();
+		
 		JMenuItem todos = new JMenuItem("Listar todos");
 		todos.setMnemonic('L');
 		
@@ -145,12 +162,12 @@ public class TelaMenu extends JFrame{
 		// Menu Relatórios //
 		JMenu menuRelatorio = new JMenu("Relatórios");
 		menuRelatorio.setMnemonic('R');
-		
-		JMenuItem relAniversarioTodos = new JMenuItem("Aniversário (Todos)");
-		relAniversarioTodos.setMnemonic('N');
-		
+				
 		JMenuItem relAniversario = new JMenuItem("Aniversário");
 		relAniversario.setMnemonic('A');
+		
+		JMenuItem relFinanceiro = new JMenuItem("Financeiro");
+		relFinanceiro.setMnemonic('F');
 		
 		JMenuItem relCasamento = new JMenuItem("Casamento");
 		relCasamento.setMnemonic('C');
@@ -158,9 +175,12 @@ public class TelaMenu extends JFrame{
 		JMenuItem relRecadastramento = new JMenuItem("Recadastramento");
 		relRecadastramento.setMnemonic('R');
 		
-		relAniversarioTodos.addActionListener(new ActionListener() {
+		JMenuItem relFalecido = new JMenuItem("Falecido");
+		relFalecido.setMnemonic('F');
+		
+		relFinanceiro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				reportsAll();
+				reportsFinanceiro();
 			}			
 		});
 		relAniversario.addActionListener(new ActionListener() {
@@ -180,11 +200,19 @@ public class TelaMenu extends JFrame{
 			}			
 		});
 		
+		relFalecido.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				reportsFalecido();
+			}			
+		});
+		
 		menuRelatorio.add(relAniversario);
-		menuRelatorio.add(relAniversarioTodos);
+		menuRelatorio.add(relFinanceiro);
 		menuRelatorio.addSeparator();
 		menuRelatorio.add(relCasamento);
 		menuRelatorio.add(relRecadastramento);
+		menuRelatorio.addSeparator();
+		menuRelatorio.add(relFalecido);
 		
 		menuBar.add(menuRelatorio);
 				
@@ -202,7 +230,7 @@ public class TelaMenu extends JFrame{
 		menuBar.add(usuarioLogado);
 	
 		setJMenuBar(menuBar);				
-		setSize(730, 530);		
+		setSize(750, 550);		
 		setLocationRelativeTo(null);
 		setResizable(false);
 		setVisible(true);
@@ -215,19 +243,43 @@ public class TelaMenu extends JFrame{
 		
 	}
 
-	private void reportsAll() {
-		try{
-			new RelatorioBO().runAniversarioAll();
-		}catch(Exception ex){
-			logger.error("Erro ao executar o relátorio.",ex);
+	private void reportsFinanceiro() {
+		if (telaPesquisaPagamento == null || telaPesquisaPagamento.isClosed()) {
+			telaPesquisaPagamento = new TelaPesquisaPagamento(this);
 		}
+		telaPesquisaPagamento.restaura();
+		// Bounds(Left, Top, Right e Bottom)
+		telaPesquisaPagamento.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3.3));
+
+		desktop.moveToFront(telaPesquisaPagamento);
 	}
 	
 	private void reportsRecadastramento() {
 		try{
 			new RelatorioBO().runRecadastramento();
+		} catch (RegraDeNegocioException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (RelatorioException e) {
+			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}catch(Exception ex){
 			logger.error("Erro ao executar o relátorio.",ex);
+			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void reportsFalecido() {
+		try{
+			new RelatorioBO().runFalecido();
+		} catch (RegraDeNegocioException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (RelatorioException e) {
+			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}catch(Exception ex){
+			logger.error("Erro ao executar o relátorio.",ex);
+			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
 		}
 	}
 	
@@ -236,8 +288,9 @@ public class TelaMenu extends JFrame{
 			telaPesquisaCasamento = new TelaPesquisa(this, TipoPesquisa.CASAMENTO);
 		}
 		telaPesquisaCasamento.restaura();
-		telaPesquisaCasamento.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3));
+		// Bounds(Left, Top, Right e Bottom)
+		telaPesquisaCasamento.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3.3));
 
 		desktop.moveToFront(telaPesquisaCasamento);
 	}
@@ -248,8 +301,9 @@ public class TelaMenu extends JFrame{
 			telaPesquisaAniversario = new TelaPesquisa(this, TipoPesquisa.ANIVERSARIO);
 		}
 		telaPesquisaAniversario.restaura();
-		telaPesquisaAniversario.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 1.5), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3));
+		// Bounds(Left, Top, Right e Bottom)
+		telaPesquisaAniversario.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3.3));
 
 		desktop.moveToFront(telaPesquisaAniversario);
 	}
@@ -259,7 +313,8 @@ public class TelaMenu extends JFrame{
 			List<DizimistaVO> lista = getDizimistaDAO().getDizimistaAll();
 			if (!lista.isEmpty()) {
 				TelaListagemDizimista tela = new TelaListagemDizimista(this, lista);
-				tela.setBounds(this.ESPACO_ENTRE_JANELA / 2, (int) (this.ESPACO_ENTRE_JANELA / 1.5), this.getDesktop().getWidth() - this.ESPACO_ENTRE_JANELA, this.getDesktop()
+				// Bounds(Left, Top, Right e Bottom)
+				tela.setBounds(this.ESPACO_ENTRE_JANELA / 2, (int) (this.ESPACO_ENTRE_JANELA / 2), this.getDesktop().getWidth() - this.ESPACO_ENTRE_JANELA, this.getDesktop()
 						.getHeight()
 						- (int)(this.ESPACO_ENTRE_JANELA * 2));
 				this.getDesktop().moveToFront(tela);
@@ -280,22 +335,55 @@ public class TelaMenu extends JFrame{
 		if (telaDizimista == null || telaDizimista.isClosed()) {
 			telaDizimista = new TelaDizimista(this);
 		}
-		telaDizimista.restaura();
+		telaDizimista.restaura(false);
+		// Bounds(Left, Top, Right e Bottom)
 		telaDizimista.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
 				.getHeight() - (int)(ESPACO_ENTRE_JANELA));
 
 		desktop.moveToFront(telaDizimista);	
 	}
 	
+	// chama a tela registrar
+	private void registrarPagamento() {
+		if (telaFinanceiro == null || telaFinanceiro.isClosed()) {
+			telaFinanceiro = new TelaFinanceiro(this);
+		}
+		telaFinanceiro.restaura(false);
+		// Bounds(Left, Top, Right e Bottom)
+		telaFinanceiro.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA));
+
+		desktop.moveToFront(telaFinanceiro);	
+	}
+	
+	
 	private void cadastrarUsuario() {
 		if (telaUsuario == null || telaUsuario.isClosed()) {
 			telaUsuario = new TelaUsuario(this);
 		}
 		telaUsuario.restaura();
+		// Bounds(Left, Top, Right e Bottom)
 		telaUsuario.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
-				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 2.5));
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3));
 
 		desktop.moveToFront(telaUsuario);	
+	}
+	
+	JComboBox<ItemValue> getComboMes(){
+		JComboBox<ItemValue> comboMes = new JComboBox<ItemValue>();
+		comboMes.addItem(new ItemValue("01", "Janeiro"));
+		comboMes.addItem(new ItemValue("02", "Fevereiro"));
+		comboMes.addItem(new ItemValue("03", "Março"));
+		comboMes.addItem(new ItemValue("04", "Abril"));
+		comboMes.addItem(new ItemValue("05", "Maio"));
+		comboMes.addItem(new ItemValue("06", "Junho"));
+		comboMes.addItem(new ItemValue("07", "Julho"));
+		comboMes.addItem(new ItemValue("08", "Agosto"));
+		comboMes.addItem(new ItemValue("09", "Setembro"));
+		comboMes.addItem(new ItemValue("10", "Outubro"));
+		comboMes.addItem(new ItemValue("11", "Novembro"));
+		comboMes.addItem(new ItemValue("12", "Dezembro"));
+		return comboMes;
 	}
 	
 	private void gerarBackup() {

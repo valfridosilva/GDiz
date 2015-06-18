@@ -31,13 +31,15 @@ public class Mensagem {
 	public static final String REGISTRO_EXCLUIDO = "%S excluído com sucesso!";
 	public static final String REGISTRO_DUPLICADO = "Já existe um %S com o mesmo %s!";
 	public static final String CONFIRMA_EXCLUSAO = "Deseja excluir %S ?";	
+	public static final String CONFIRMA_EXCLUSAO_HISTORICO = "Deseja excluir %S registro(s) do histórico?";
 	public static final String NENHUM_REGISTRO = "Nenhum registro foi encontrado!";
 	public static final String NENHUM_DIZIMISTA_ENCONTRADO = "Nenhum dizimista com o código %S foi encontrado!";
 	public static final String ARQUIVO_IMPORTADO = "Arquivo importado com sucesso!";	
 	public static final String ARQUIVO_EXPORTADO = "Arquivo gerado com sucesso!";	
 	public static final String ARQUIVO_EXTENSAO = "Favor selecionar um arquivo no formato %s";
 	public static final String ARQUIVO_INEXISTENTE = "Arquivo não encontrado!";
-	public static final String CAMPO_INVALIDO = "O valor %S é inválido para o campo %S!";	
+	public static final String CAMPO_INVALIDO = "O valor %S é inválido para o campo %S!";
+	public static final String HISTORICO_SELECAO = "Selecione um registro do histórico para exclusão!";
 	public static final String CAMPO_PESQUISA = "Favor preencher o campo %S!";
 	public static final String CONFIRMA_RESTAURAR_BACKUP = "Tem certeza que deseja sobrescrever os dados existentes?";
 	public static final String ARQUIVO_JA_EXISTENTE = "Deseja substituir o arquivo existente?";

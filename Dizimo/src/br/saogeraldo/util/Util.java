@@ -1,11 +1,13 @@
 package br.saogeraldo.util;
 
-import java.util.Date;
+import java.text.DecimalFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.util.Date;
 
-public class DataUtil { 
+public class Util { 
 	private static SimpleDateFormat sdf = new SimpleDateFormat();
+	private static DecimalFormat df = new DecimalFormat("#,###.00"); 
 	
 	static{
 		sdf.applyPattern("dd/MM/yyyy");
@@ -27,7 +29,7 @@ public class DataUtil {
 		
 		return res;
 	}
-	
+
 	public static Date convertStringToDate(String data) throws ParseException {
 		if(data == null || data.isEmpty()){
 			return null;
@@ -41,5 +43,12 @@ public class DataUtil {
 			return "";
 		}
 		return sdf.format(data);
+	}
+	
+	public static String convertValor(Double value) {
+		if(value == null){
+			return "";
+		}
+		return df.format(value);
 	}
 }

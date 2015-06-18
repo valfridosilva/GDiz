@@ -4,7 +4,7 @@ import java.util.ArrayList;
 
 import javax.swing.table.AbstractTableModel;
 
-public class ModeloRelatorio extends AbstractTableModel {
+public class ModeloTabela extends AbstractTableModel {
 
 	public static String tipo;
 	private static final long serialVersionUID = 1L;
@@ -12,7 +12,7 @@ public class ModeloRelatorio extends AbstractTableModel {
 	private ArrayList<LinhaRelatorio> dados;
 	int cont = 0;
 
-	public ModeloRelatorio(String[] colunas) {
+	public ModeloTabela(String[] colunas) {
 		this.colunas = colunas;
 		this.dados = new ArrayList<LinhaRelatorio>();
 	}
@@ -53,6 +53,9 @@ public class ModeloRelatorio extends AbstractTableModel {
 	}
 
 	public boolean isCellEditable(int row, int col) {
+		if(col == 3){
+			return true;
+		}
 		return false;
 	}
 	

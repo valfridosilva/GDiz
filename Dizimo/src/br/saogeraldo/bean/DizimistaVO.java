@@ -11,6 +11,7 @@ public class DizimistaVO {
 	private Date dtCasamento;
 	private String nomeConjuge;
 	private Integer idConjugeDizimista;
+	private boolean falecido;
 
 	public int getIdDizimista() {
 		return idDizimista;
@@ -74,6 +75,14 @@ public class DizimistaVO {
 	
 	public void setIdConjugeDizimista(Integer idConjugeDizimista) {
 		this.idConjugeDizimista = idConjugeDizimista;
+	}
+	
+	public boolean isFalecido() {
+		return falecido;
+	}
+	
+	public void setFalecido(boolean falecido) {
+		this.falecido = falecido;
 	}
 
 	@Override
