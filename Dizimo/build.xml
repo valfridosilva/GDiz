@@ -1,0 +1,45 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<project default="Dizimo" name="Jar Generator">
+	<target name="Dizimo" depends="cleanOut" />
+	
+	<property name="build.dir" value="classes" />
+	<property name="lib.dir" value="lib" />
+	<property name="dest.dir" value="dst" />
+	
+	<path id="classpath">
+		<fileset dir="${lib.dir}" includes="*.jar" />
+		<fileset dir="${dest.dir}" includes="Dizimo.jar" />
+	</path>
+	
+	<target name="clean" description="Deleta as pastas de build">
+	    <delete dir="${build.dir}"/>
+		<delete dir="${dest.dir}"/>
+	</target>
+	
+	<target name="compile" depends="clean" description="Compila as classes">
+        <mkdir dir="${build.dir}"/>
+		<mkdir dir="${build.dir}/dst"/>
+        <javac srcdir="src" destdir="${build.dir}" classpathref="classpath" encoding="ISO8859_1" />
+	</target>
+	
+	<target name="build-jar" depends="compile" description="Empacota Dizimo.jar">
+		<copy todir="${build.dir}">		    
+			<fileset dir="resources">
+		       <include name="*.properties"/>
+			   <include name="relatorios/*.jasper"/>
+			   <include name="imagens/*.*"/>
+		    </fileset>
+		</copy>
+		<jar basedir="${build.dir}" destfile="${dest.dir}/dst/Dizimo.jar" >
+			<manifest>
+			     <attribute name="Main-Class" value="br.saogeraldo.view.Principal"/>
+			</manifest>
+			<zipgroupfileset dir="${lib.dir}" includes="*.jar"/>
+		</jar>
+	</target>
+	
+	<target name="cleanOut" depends="build-jar" description="Limpa todas as pastas usadas no empacotamento">
+	    <delete dir="${build.dir}"/>
+	</target>
+</project>

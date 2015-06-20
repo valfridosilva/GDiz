@@ -39,8 +39,6 @@ public class RelatorioBO{
 	}
 	
 	public void runCasamento(String dtInicio, String dtFim)throws RegraDeNegocioException, RelatorioException{
-		param = new HashMap<String, String>();
-		param.put("title", dtInicio+" - "+dtFim);		
 		String mesDia1 = Util.converteDayMonthBRtoUSA(dtInicio);
 		String mesDia2 = Util.converteDayMonthBRtoUSA(dtFim);
 		try{
@@ -51,13 +49,13 @@ public class RelatorioBO{
 		} catch (SQLException e) {
 			throw new RelatorioException(e);
 		}
+		param = new HashMap<String, String>();
+		param.put("title", dtInicio+" - "+dtFim);		
 		path = getClass().getClassLoader().getResource("relatorios/Rel_Casamento.jasper").getPath();
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}
 	
 	public void runAniversarioAll() throws RegraDeNegocioException, RelatorioException {
-		param = new HashMap<String, String>();
-		param.put("title", "Todos");
 		try {
 			dizimistas = new DizimistaDAO().getDizimistaAll();
 			if (dizimistas.isEmpty()) {
@@ -66,17 +64,19 @@ public class RelatorioBO{
 		} catch (SQLException e) {
 			throw new RelatorioException(e);
 		}
+		param = new HashMap<String, String>();
+		param.put("title", "Todos");
 		path = getClass().getClassLoader().getResource("relatorios/Rel_Aniversario.jasper").getPath();
 		new RelatorioUtil().runRelatorio(path, dizimistas, param);
 	}
 	
 	public void runFinanceiro(AnoMes anoMes) throws RegraDeNegocioException, RelatorioException {
-		param = new HashMap<String, String>();
 		try {
 			List<String> totalPagamento = new FinanceiroDAO().getTotalPagamentoPorMes(anoMes);
 			if (totalPagamento.isEmpty()) {
 				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 			}
+			param = new HashMap<String, String>();
 			param.put("mesReferencia", anoMes.toString());
 			param.put("total", totalPagamento.get(0));
 			param.put("valor", totalPagamento.get(1));

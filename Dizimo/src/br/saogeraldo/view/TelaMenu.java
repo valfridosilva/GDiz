@@ -56,7 +56,7 @@ public class TelaMenu extends JFrame{
 		super("Controle de Dizimista");	
 		setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
 		
-		logo = new ImageIcon(getClass().getClassLoader().getResource("logo.png")).getImage();
+		logo = new ImageIcon(getClass().getClassLoader().getResource("imagens/logo.png")).getImage();
 		desktop = new BackgroundedDesktopPane(logo);	
 		add(desktop);
 		

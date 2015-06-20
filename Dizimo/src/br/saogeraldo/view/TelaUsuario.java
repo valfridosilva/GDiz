@@ -55,7 +55,7 @@ public class TelaUsuario extends JInternalFrame {
 		this.telaMenu = telaMenu;
 		telaMenu.addJanela(this);
 		
-		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
+		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/pesquisar.gif")));
 		botaoPesquisarPorNome.setToolTipText("Pesquisar por Nome");
 		botaoSalvar = new JButtonEnter(Mensagem.LABEL_SALVAR);
 		botaoAlterar = new JButtonEnter(Mensagem.LABEL_ALTERAR);

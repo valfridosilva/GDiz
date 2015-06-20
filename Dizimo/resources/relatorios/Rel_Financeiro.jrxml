@@ -83,7 +83,7 @@
 			</band>
 		</pageFooter>
 		<summary>
-			<band height="140"  isSplitAllowed="true" >
+			<band height="104"  isSplitAllowed="true" >
 				<line direction="TopDown">
 					<reportElement
 						x="0"
@@ -96,39 +96,39 @@
 				<staticText>
 					<reportElement
 						x="0"
-						y="38"
-						width="160"
-						height="30"
+						y="30"
+						width="143"
+						height="20"
 						key="staticText-6"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Oblique" size="14" isBold="false" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="12" isBold="false" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Total de Dizimistas:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
 						x="0"
-						y="71"
-						width="160"
-						height="30"
+						y="55"
+						width="143"
+						height="20"
 						key="staticText-7"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Oblique" size="14" isBold="false" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="12" isBold="false" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Valor Total:]]></text>
 				</staticText>
 				<staticText>
 					<reportElement
 						x="0"
-						y="104"
-						width="160"
-						height="30"
+						y="81"
+						width="143"
+						height="20"
 						key="staticText-8"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Oblique" size="14" isBold="false" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="12" isBold="false" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Média de contribuição:]]></text>
 				</staticText>
@@ -136,64 +136,64 @@
 					<reportElement
 						x="0"
 						y="5"
-						width="160"
-						height="30"
+						width="143"
+						height="20"
 						key="staticText-9"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Oblique" size="14" isBold="false" isItalic="true"/>
+						<font pdfFontName="Helvetica-Oblique" size="12" isBold="false" isItalic="true"/>
 					</textElement>
 				<text><![CDATA[Mês de Referência:]]></text>
 				</staticText>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="163"
-						y="6"
-						width="61"
-						height="30"
+						x="148"
+						y="5"
+						width="66"
+						height="20"
 						key="textField"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{mesReferencia}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="163"
-						y="38"
-						width="61"
-						height="30"
+						x="148"
+						y="30"
+						width="44"
+						height="20"
 						key="textField"/>
 					<box></box>
 					<textElement textAlignment="Left" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{total}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="163"
-						y="71"
-						width="72"
-						height="30"
+						x="148"
+						y="55"
+						width="73"
+						height="20"
 						key="textField"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{valor}]]></textFieldExpression>
 				</textField>
 				<textField isStretchWithOverflow="false" isBlankWhenNull="false" evaluationTime="Now" hyperlinkType="None"  hyperlinkTarget="Self" >
 					<reportElement
-						x="163"
-						y="104"
-						width="72"
-						height="30"
+						x="148"
+						y="81"
+						width="73"
+						height="20"
 						key="textField"/>
 					<box></box>
 					<textElement textAlignment="Right" verticalAlignment="Middle">
-						<font pdfFontName="Helvetica-Bold" size="14" isBold="true"/>
+						<font pdfFontName="Helvetica-Bold" size="11" isBold="true"/>
 					</textElement>
 				<textFieldExpression   class="java.lang.String"><![CDATA[$P{media}]]></textFieldExpression>
 				</textField>

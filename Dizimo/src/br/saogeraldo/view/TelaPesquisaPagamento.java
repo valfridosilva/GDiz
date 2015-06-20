@@ -74,7 +74,7 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 	public JPanel getPanelForm() {
 		
 		FormLayout formlayout = new FormLayout(
-				"2dlu, 40px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 130px, 2dlu, 130px, 2dlu, 110px, 2dlu",
+				"2dlu, 40px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 110px, 2dlu, 130px, 2dlu, 110px, 2dlu",
 				"2dlu, 10px, 5dlu, pref, 5dlu, 10px, 5dlu");
 		JPanel jpanel = new JPanel(formlayout);		
 		jpanel.setBorder(BorderFactory.createTitledBorder("Pesquisa "));

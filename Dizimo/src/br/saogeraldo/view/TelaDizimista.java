@@ -97,11 +97,11 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 			logger.error("Erro ao criar parser", ex);
 		}
 
-		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
+		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/pesquisar.gif")));
 		botaoPesquisarPorNome.setToolTipText("Pesquisar por Nome");
-		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
+		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/pesquisar.gif")));
 		botaoPesquisarPorCodigo.setToolTipText("Pesquisar por Código");
-		botaoCarregar = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("carregar.png")));
+		botaoCarregar = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/carregar.png")));
 		botaoCarregar.setToolTipText("Carregar Nome do Cônjuge");
 		botaoSalvar = new JButtonEnter(Mensagem.LABEL_SALVAR);
 		botaoAlterar = new JButtonEnter(Mensagem.LABEL_ALTERAR);

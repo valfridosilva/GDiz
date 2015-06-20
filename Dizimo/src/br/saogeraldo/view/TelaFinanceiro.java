@@ -95,9 +95,9 @@ public class TelaFinanceiro extends JInternalFrame implements TelaListagem{
 		tabelaHistorico.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
 		tabelaHistorico.setPreferredScrollableViewportSize(new Dimension(610,300));	
 
-		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
+		botaoPesquisarPorNome = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/pesquisar.gif")));
 		botaoPesquisarPorNome.setToolTipText("Pesquisar por Nome");
-		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("pesquisar.gif")));
+		botaoPesquisarPorCodigo = new JButtonEnter(new ImageIcon(getClass().getClassLoader().getResource("imagens/pesquisar.gif")));
 		botaoPesquisarPorCodigo.setToolTipText("Pesquisar por Código");
 		botaoSalvar = new JButtonEnter(Mensagem.LABEL_SALVAR);
 		botaoExcluir = new JButtonEnter(Mensagem.LABEL_EXCLUIR);
@@ -169,7 +169,7 @@ public class TelaFinanceiro extends JInternalFrame implements TelaListagem{
 		
 		FormLayout formlayout = new FormLayout(
 				"2dlu, pref, 2dlu, 130px, 2dlu, pref, 2dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
-				"2dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu");
+				"2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu");
 		JPanel jpanel = new JPanel(formlayout);		
 		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
 		
@@ -508,4 +508,5 @@ public class TelaFinanceiro extends JInternalFrame implements TelaListagem{
 		}
 		return dizimistaDAO;
 	}
+
 }
