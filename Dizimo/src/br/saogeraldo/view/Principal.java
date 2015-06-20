@@ -6,7 +6,6 @@ import javax.swing.UIManager;
 
 import org.apache.log4j.Logger;
 
-import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.util.FabricaConexao;
 import br.saogeraldo.util.Mensagem;
 
@@ -15,9 +14,7 @@ public class Principal {
 	public static void main(String[] args) {
 		javax.swing.SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-            	//TelaLogin tela = new TelaLogin();	
-            	TelaLogin.usuario = new UsuarioVO(1,"teste");
-            	TelaMenu tela = new TelaMenu();
+            	TelaLogin tela = new TelaLogin();	
             	tela.setVisible(true);	       
             	UIManager.put ("OptionPane.yesButtonText","Sim"); 
         		UIManager.put ("OptionPane.noButtonText","Não"); 

@@ -104,7 +104,7 @@ public class FinanceiroDAO {
 		ps.setInt(1, anoMes.getAnoMes());
 		ResultSet rs = ps.executeQuery();
 		List<String> result = new ArrayList<String>();
-		if(rs.next()){		
+		if(rs.next() && rs.getInt("qtdDizimista") != 0){		
 			result.add(String.valueOf(rs.getInt("qtdDizimista")));
 			result.add(Util.convertValor(rs.getDouble("totalRecebido")));
 			result.add(Util.convertValor(rs.getDouble("mediaValor")));

@@ -19,7 +19,7 @@
 	
 	<target name="compile" depends="clean" description="Compila as classes">
         <mkdir dir="${build.dir}"/>
-		<mkdir dir="${build.dir}/dst"/>
+		<mkdir dir="${dest.dir}/dataBase"/>
         <javac srcdir="src" destdir="${build.dir}" classpathref="classpath" encoding="ISO8859_1" />
 	</target>
 	
@@ -31,7 +31,12 @@
 			   <include name="imagens/*.*"/>
 		    </fileset>
 		</copy>
-		<jar basedir="${build.dir}" destfile="${dest.dir}/dst/Dizimo.jar" >
+		<copy todir="${dest.dir}/dataBase">
+			<fileset dir="dataBase">
+		       <include name="dizimo_bd.*"/>
+		    </fileset>
+		</copy>
+		<jar basedir="${build.dir}" destfile="${dest.dir}/Dizimo.jar" >
 			<manifest>
 			     <attribute name="Main-Class" value="br.saogeraldo.view.Principal"/>
 			</manifest>

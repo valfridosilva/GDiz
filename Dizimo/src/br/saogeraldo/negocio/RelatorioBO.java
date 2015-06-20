@@ -17,7 +17,6 @@ import br.saogeraldo.util.Util;
  
 public class RelatorioBO{
 	private List<DizimistaVO> dizimistas;
-	private String path;
 	private Map<String, String> param;
 		
 	
@@ -34,8 +33,7 @@ public class RelatorioBO{
 		} catch (SQLException e) {
 			throw new RelatorioException(e);
 		}
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Aniversario.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Aniversario.jasper", dizimistas, param);
 	}
 	
 	public void runCasamento(String dtInicio, String dtFim)throws RegraDeNegocioException, RelatorioException{
@@ -51,8 +49,7 @@ public class RelatorioBO{
 		}
 		param = new HashMap<String, String>();
 		param.put("title", dtInicio+" - "+dtFim);		
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Casamento.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Casamento.jasper", dizimistas, param);
 	}
 	
 	public void runAniversarioAll() throws RegraDeNegocioException, RelatorioException {
@@ -66,8 +63,7 @@ public class RelatorioBO{
 		}
 		param = new HashMap<String, String>();
 		param.put("title", "Todos");
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Aniversario.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Aniversario.jasper", dizimistas, param);
 	}
 	
 	public void runFinanceiro(AnoMes anoMes) throws RegraDeNegocioException, RelatorioException {
@@ -84,8 +80,7 @@ public class RelatorioBO{
 		} catch (SQLException e) {
 			throw new RelatorioException(e);
 		}
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Financeiro.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Financeiro.jasper", param);
 	}
 	 
 	public void runRecadastramento()throws RegraDeNegocioException, RelatorioException{
@@ -98,8 +93,7 @@ public class RelatorioBO{
 		}catch(SQLException e){
 			throw new RelatorioException(e);
 		}
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Recadastramento.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Recadastramento.jasper", dizimistas, param);
 	}
 	
 	public void runFalecido()throws RegraDeNegocioException, RelatorioException{
@@ -112,7 +106,6 @@ public class RelatorioBO{
 		}catch(SQLException e){
 			throw new RelatorioException(e);
 		}
-		path = getClass().getClassLoader().getResource("relatorios/Rel_Falecido.jasper").getPath();
-		new RelatorioUtil().runRelatorio(path, dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Falecido.jasper", dizimistas, param);
 	}
 }
