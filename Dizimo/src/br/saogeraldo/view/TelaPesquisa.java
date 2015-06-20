@@ -121,16 +121,36 @@ public class TelaPesquisa extends JInternalFrame {
 	}
 	
 	private void valida() throws ValidacaoException {
-		if (campoDataInicial.getValue() == null){
-			campoDataInicial.requestFocus();
-			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloDataInicial.getToolTipText()));
+		if(!campoDataInicial.getText().equals(campoDataInicial.getValue())){
+			if (campoDataInicial.getValue()==null) {
+				campoDataInicial.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO, rotuloDataInicial.getToolTipText()));
+			} else {
+				campoDataInicial.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataInicial.getText(), rotuloDataInicial.getToolTipText()));
+			}
 		}
-		if (campoDataFinal.getValue() == null){
-			campoDataFinal.requestFocus();
-			throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO,rotuloDataFinal.getToolTipText()));
+		validaData(campoDataInicial, rotuloDataInicial);
+		if(!campoDataFinal.getText().equals(campoDataFinal.getValue())){
+			if (campoDataFinal.getValue()==null) {
+				campoDataFinal.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_OBRIGATORIO, rotuloDataFinal.getToolTipText()));
+			} else {
+				campoDataFinal.requestFocus();
+				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoDataFinal.getText(), rotuloDataFinal.getToolTipText()));
+			}
+		}
+		validaData(campoDataFinal,rotuloDataFinal);
+		
+	}
+	
+	private void validaData(JFormattedTextField campo, JLabel label) throws ValidacaoException{
+		String[] data = campo.getText().split("/");
+		if(Integer.parseInt(data[0]) > 31 || Integer.parseInt(data[1]) > 12){
+			campo.requestFocus();
+			throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campo.getText(), label.getToolTipText()));
 		}
 	}
-
 
 	private void pesquisar() {					
 		try {				
