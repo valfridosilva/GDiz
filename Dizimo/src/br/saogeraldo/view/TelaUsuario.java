@@ -178,6 +178,11 @@ public class TelaUsuario extends JInternalFrame {
 
 	private void excluir() {
 		try {
+			if(TelaLogin.usuario.getIdUsuario() == usuario.getIdUsuario()){
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), Mensagem.USUARIO_SEM_PERMISSAO_EXCLUSAO, Mensagem.ALERTA,
+						JOptionPane.WARNING_MESSAGE);
+				return;
+			}
 			Object[] options = { Mensagem.SIM, Mensagem.NAO };
 			int res = JOptionPane.showOptionDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.CONFIRMA_EXCLUSAO, usuario.getNome()), Mensagem.CONFIRMA,
 					JOptionPane.YES_NO_OPTION, JOptionPane.QUESTION_MESSAGE, null, options, options[0]);
@@ -251,7 +256,7 @@ public class TelaUsuario extends JInternalFrame {
 					TelaListagemUsuario tela = new TelaListagemUsuario(telaMenu, lista, this);
 					tela.setBounds((int)(telaMenu.ESPACO_ENTRE_JANELA/1.5), (int) (telaMenu.ESPACO_ENTRE_JANELA / 1.5), 
 							telaMenu.getDesktop().getWidth() - (int)(telaMenu.ESPACO_ENTRE_JANELA*1.5), telaMenu.getDesktop().getHeight()
-							- (int)(telaMenu.ESPACO_ENTRE_JANELA * 2.3));
+							- (int)(telaMenu.ESPACO_ENTRE_JANELA * 3));
 					telaMenu.getDesktop().moveToFront(tela);
 				}
 			} else {

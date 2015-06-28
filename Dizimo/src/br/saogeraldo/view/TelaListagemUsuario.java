@@ -51,7 +51,7 @@ public class TelaListagemUsuario extends JInternalFrame {
 		dimensionaColuna(tabela.getColumnModel()); 
 		tabela.getTableHeader().setReorderingAllowed(false); // impede que o usuário mova as colunas 
 		tabela.setSelectionMode(ListSelectionModel.SINGLE_SELECTION); 
-		tabela.setPreferredScrollableViewportSize(new Dimension(450, 100));	
+		tabela.setPreferredScrollableViewportSize(new Dimension(520, 100));	
 		
 		tabela.addMouseListener(new MouseAdapter() {
 			public void mouseClicked(MouseEvent e) {

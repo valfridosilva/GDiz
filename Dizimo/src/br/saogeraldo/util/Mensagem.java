@@ -44,5 +44,6 @@ public class Mensagem {
 	public static final String CONFIRMA_RESTAURAR_BACKUP = "Tem certeza que deseja sobrescrever os dados existentes?";
 	public static final String ARQUIVO_JA_EXISTENTE = "Deseja substituir o arquivo existente?";
 	public static final String PASTA_SEM_PERMISSAO_ESCRITA = "Você não tem permissão para salvar neste local!";
+	public static final String USUARIO_SEM_PERMISSAO_EXCLUSAO = "Não é possível excluir o usuário que está logado!";
 			
 }
