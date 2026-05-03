@@ -239,7 +239,7 @@ public class TelaMenu extends JFrame{
 	//fim do construtor     
 	
 	private void sobre() {
-		JOptionPane.showMessageDialog(this, "Versão: 1.1 (2015)\n Desenvolvido por: Valfrido","Sobre", JOptionPane.INFORMATION_MESSAGE, null);
+		JOptionPane.showMessageDialog(this, "Versão: 1.1 (2015)\nVersão: 1.2 (2026)\nDesenvolvido por: Valfrido","Sobre", JOptionPane.INFORMATION_MESSAGE, null);
 		
 	}
 

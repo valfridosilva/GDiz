@@ -12,6 +12,7 @@ public class DizimistaVO {
 	private String nomeConjuge;
 	private Integer idConjugeDizimista;
 	private boolean falecido;
+	private boolean inativo;
 
 	public int getIdDizimista() {
 		return idDizimista;
@@ -83,6 +84,14 @@ public class DizimistaVO {
 	
 	public void setFalecido(boolean falecido) {
 		this.falecido = falecido;
+	}
+	
+	public boolean isInativo() {
+		return inativo;
+	}
+	
+	public void setInativo(boolean inativo) {
+		this.inativo = inativo;
 	}
 
 	@Override

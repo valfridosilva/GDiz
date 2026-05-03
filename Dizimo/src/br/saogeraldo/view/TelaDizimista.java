@@ -52,6 +52,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 	private JRadioButton radioConjugeDizimista;
 	private JRadioButton radioConjugeNaoDizimista;
 	private JCheckBox checkFalecido;
+	private JCheckBox checkInativo;
 	private ButtonGroup grupo;
 	private JLabel labelCodigo;	
 	private JLabel labelNome;	
@@ -63,6 +64,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 	private JLabel labelConjugeDizimista;
 	private JLabel labelCodigoConjuge;
 	private JLabel labelFalecido;
+	private JLabel labelInativo;
 	private JTextField campoCodigo;
 	private JTextField campoNome;		
 	private JTextField campoEndereco;
@@ -128,12 +130,15 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		labelCodigoConjuge.setToolTipText("Código do Cônjuge");
 		labelFalecido = new JLabel(" Falecido?:");
 		labelFalecido.setToolTipText("Falecido?");
+		labelInativo = new JLabel(" Inativo?:");
+		labelInativo.setToolTipText("Inativo?");
 		labelConjugeDizimista = new JLabel(" Cônjuge é Dizimista?");
 		labelConjugeDizimista.setToolTipText("Cônjuge é Dizimista");
 		radioConjugeDizimista = new JRadioButton("Sim",false);
 		radioConjugeDizimista.setIgnoreRepaint(false);
 		radioConjugeNaoDizimista = new JRadioButton("Não",false);
 		checkFalecido = new JCheckBox();
+		checkInativo = new JCheckBox();
 		grupo = new ButtonGroup();
 		grupo.add(radioConjugeDizimista);
 		grupo.add(radioConjugeNaoDizimista);
@@ -183,7 +188,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 	public JPanel getPanelForm() {
 		
 		FormLayout formlayout = new FormLayout(
-				"2dlu, pref, 2dlu, 100px, 2dlu, pref, 2dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
+				"2dlu, pref, 2dlu, 80px, 2dlu, pref, 4dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
 				"2dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 5dlu, pref, 2dlu, pref, 5dlu");
 		JPanel jpanel = new JPanel(formlayout);		
 		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
@@ -228,6 +233,15 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 			}
 		});
 		
+		
+		checkFalecido.addItemListener(new ItemListener() {
+		    public void itemStateChanged(ItemEvent e) {
+		        if (checkFalecido.isSelected()) {
+		        	checkInativo.setSelected(checkFalecido.isSelected());
+		        }
+		    }
+		});
+		
 		radioConjugeDizimista.addItemListener(new ItemListener() {
 			public void itemStateChanged(ItemEvent arg0) {
 				campoCodigoConjuge.setEditable(true);
@@ -251,8 +265,11 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		jpanel.add(campoCodigo, cellconstraints.xyw(4, 2, 3));
 		jpanel.add(botaoPesquisarPorCodigo, cellconstraints.xy(8, 2));
 		
+		jpanel.add(labelInativo, cellconstraints.xy(10, 2));
+		jpanel.add(checkInativo, cellconstraints.xy(12, 2));
+		
 		jpanel.add(labelFalecido, cellconstraints.xy(14, 2));
-		jpanel.add(checkFalecido, cellconstraints.xyw(16, 2, 3));
+		jpanel.add(checkFalecido, cellconstraints.xy(16, 2));
 		
 		jpanel.add(labelNome, cellconstraints.xy(2, 4));
 		jpanel.add(campoNome, cellconstraints.xyw(4, 4, 11));	
@@ -299,6 +316,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		}
 		
 		dz.setFalecido(checkFalecido.isSelected());
+		dz.setInativo(checkInativo.isSelected());
 		
 		if(campoNome.getText().trim().isEmpty()){
 			dz.setNome(null);
@@ -574,6 +592,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 			}
 		}
 		checkFalecido.setSelected(dz.isFalecido());
+		checkInativo.setSelected(dz.isInativo());
 		habilitaBotoes(false);
 		dizimista = dz;
 	}
@@ -590,6 +609,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		campoCodigoConjuge.setText("");
 		grupo.clearSelection();
 		checkFalecido.setSelected(false);
+		checkInativo.setSelected(false);
 		habilitaBotoes(true);
 		campoNomeConjuge.setEditable(false);		
 		campoCodigoConjuge.setEditable(false);
@@ -605,7 +625,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 	}
 }
 
-// classe que valida os campos pra receberem somente nï¿½meros
+// classe que valida os campos pra receberem somente números
 class SomenteNum implements KeyListener{
     public void keyTyped(KeyEvent e) {
        char c = e.getKeyChar();	            

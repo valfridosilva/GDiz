@@ -21,7 +21,7 @@ public class DizimistaDAO {
 	 */
 	public void insert(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();				
-		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, endereco, telefone, dtCasamento, nomeConjuge, idConjugeDizimista, falecido) VALUES(?,?,?,?,?,?,?,?,?)";
+		String sql = "INSERT INTO dizimista(idDizimista, nome, dtNascimento, endereco, telefone, dtCasamento, nomeConjuge, idConjugeDizimista, falecido, inativo) VALUES(?,?,?,?,?,?,?,?,?,?)";
 		ps = con.prepareStatement(sql);
 		int cont = 1;
 		ps.setInt(cont++, dz.getIdDizimista());		
@@ -41,6 +41,7 @@ public class DizimistaDAO {
 			ps.setInt(cont++, dz.getIdConjugeDizimista());
 		}
 		ps.setBoolean(cont++, dz.isFalecido());
+		ps.setBoolean(cont++, dz.isInativo());
 
 		ps.execute();
 		ps.close();
@@ -52,7 +53,7 @@ public class DizimistaDAO {
 	 */
 	public void update(DizimistaVO dz) throws SQLException {		
 		con = FabricaConexao.getConexao();		
-		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, endereco = ?, telefone = ?, dtCasamento = ?, nomeConjuge = ?, idConjugeDizimista = ?, falecido = ? WHERE idDizimista = ?";
+		String sql = "UPDATE dizimista SET nome = ?, dtNascimento = ?, endereco = ?, telefone = ?, dtCasamento = ?, nomeConjuge = ?, idConjugeDizimista = ?, falecido = ?, inativo = ? WHERE idDizimista = ?";
 		ps = con.prepareStatement(sql);
 		int cont = 1;
 		ps.setString(cont++, dz.getNome());				
@@ -71,6 +72,8 @@ public class DizimistaDAO {
 			ps.setInt(cont++, dz.getIdConjugeDizimista());
 		}
 		ps.setBoolean(cont++, dz.isFalecido());
+		
+		ps.setBoolean(cont++, dz.isInativo());
 		
 		ps.setInt(cont++, dz.getIdDizimista());
 
@@ -108,6 +111,7 @@ public class DizimistaDAO {
 			dz = new DizimistaVO();						
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setFalecido(rs.getBoolean("falecido"));
+			dz.setInativo(rs.getBoolean("inativo"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
@@ -144,6 +148,7 @@ public class DizimistaDAO {
 			dz = new DizimistaVO();
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setFalecido(rs.getBoolean("falecido"));
+			dz.setInativo(rs.getBoolean("inativo"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
@@ -173,7 +178,7 @@ public class DizimistaDAO {
 	public List<DizimistaVO> getAniversarioByDay(String dtInicio, String dtFim) throws SQLException {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT idDizimista, nome, dtNascimento, telefone FROM dizimista where falecido = false AND SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
+		String sql = "SELECT idDizimista, nome, dtNascimento, telefone FROM dizimista where falecido = false AND inativo = false AND SUBSTRING(dtNascimento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(dtNascimento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);	
@@ -201,7 +206,7 @@ public class DizimistaDAO {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
 		String sql = "SELECT d.iddizimista, d.nome, d.dtCasamento, d.nomeConjuge, d.idConjugeDizimista, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista "+
-				"WHERE d.falecido = false AND d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
+				"WHERE d.falecido = false AND inativo = false AND d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);		
@@ -249,6 +254,7 @@ public class DizimistaDAO {
 			DizimistaVO dz = new DizimistaVO();		
 			dz.setIdDizimista(rs.getInt("idDizimista"));
 			dz.setFalecido(rs.getBoolean("falecido"));
+			dz.setInativo(rs.getBoolean("inativo"));
 			dz.setNome(rs.getString("nome"));			
 			dz.setDtNascimento(rs.getDate("dtNascimento"));
 			dz.setEndereco(rs.getString("endereco"));
