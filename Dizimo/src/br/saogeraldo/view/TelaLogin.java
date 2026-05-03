@@ -57,6 +57,8 @@ public class TelaLogin extends JFrame {
 		setLayout(new FlowLayout());
 		setLocationRelativeTo(null);
 		
+		getRootPane().setDefaultButton(botaoLogar);
+		
 		add(rotulo);
 		add(rotuloUsuario);
 		add(campoUsuario);

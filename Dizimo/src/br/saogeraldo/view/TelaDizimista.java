@@ -91,7 +91,9 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		
 		try {
 			formatDtNascimento = new MaskFormatter("##/##/####");	
+			formatDtNascimento.setPlaceholderCharacter('_');
 			formatDtCasamento = new MaskFormatter("##/##/####");	
+			formatDtCasamento.setPlaceholderCharacter('_');
 			formatTelefone = new MaskFormatter("(##)####-####");
 		} catch (ParseException ex) {
 			logger.error("Erro ao criar parser", ex);
@@ -340,21 +342,24 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 		return dz;
 	}
 	
-	private Date getDate(JFormattedTextField campoData, JLabel labelData) throws ValidacaoException{
-		if (campoData.getText().equals(campoData.getValue())) {
-			try {
-				return Util.convertStringToDate(campoData.getText());
-			} catch (ParseException e) {
-				campoData.requestFocus();
-				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoData.getText(),labelData.getToolTipText()));
-			}
-		} else {
-			if (campoData.getValue()==null) {
-				return null;
-			} else {
-				throw new ValidacaoException(String.format(Mensagem.CAMPO_INVALIDO, campoData.getText(), labelData.getToolTipText()));
-			}
-		}
+	
+	private Date getDate(JFormattedTextField campoData, JLabel labelData) throws ValidacaoException {
+
+	    String texto = campoData.getText().trim();
+
+	    // campo não preenchido completamente
+	    if (texto.contains("_")) {
+	        return null;
+	    }
+
+	    try {
+	        return Util.convertStringToDate(texto);
+	    } catch (ParseException e) {
+	        campoData.requestFocus();
+	        throw new ValidacaoException(
+	            String.format(Mensagem.CAMPO_INVALIDO, texto, labelData.getToolTipText())
+	        );
+	    }
 	}
 	
 	public void habilitaBotoes(boolean flag) {
@@ -403,7 +408,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_INSERIDO, TIPO_OBJETO), Mensagem.SUCESSO,
 						JOptionPane.INFORMATION_MESSAGE);					
 			}else{
-				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO,"Código"),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
+				JOptionPane.showMessageDialog(telaMenu.getDesktop().getSelectedFrame(), String.format(Mensagem.REGISTRO_DUPLICADO,TIPO_OBJETO,"Cï¿½digo"),Mensagem.ALERTA,JOptionPane.WARNING_MESSAGE);
 				campoCodigo.requestFocus();
 				campoCodigo.setText("");
 			}	
@@ -600,7 +605,7 @@ public class TelaDizimista extends JInternalFrame implements TelaListagem {
 	}
 }
 
-// classe que valida os campos pra receberem somente números
+// classe que valida os campos pra receberem somente nï¿½meros
 class SomenteNum implements KeyListener{
     public void keyTyped(KeyEvent e) {
        char c = e.getKeyChar();	            
