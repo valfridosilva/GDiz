@@ -97,7 +97,8 @@ public class RelatorioBO{
 	}
 	
 	public void runFalecido()throws RegraDeNegocioException, RelatorioException{
-		param = new HashMap<String, String>();		
+		param = new HashMap<String, String>();	
+		param.put("TITULO_RELATORIO", "Relatório de Falecidos");
 		try{
 			dizimistas = new DizimistaDAO().getDizimistaFalecidoAll();
 			if(dizimistas.isEmpty()){
@@ -106,6 +107,20 @@ public class RelatorioBO{
 		}catch(SQLException e){
 			throw new RelatorioException(e);
 		}
-		new RelatorioUtil().runRelatorio("relatorios/Rel_Falecido.jasper", dizimistas, param);
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Registro_Status.jasper", dizimistas, param);
+	}
+	
+	public void runInativo()throws RegraDeNegocioException, RelatorioException{
+		param = new HashMap<String, String>();	
+		param.put("TITULO_RELATORIO", "Relatório de Inativos");
+		try{
+			dizimistas = new DizimistaDAO().getDizimistaInativosAll();
+			if(dizimistas.isEmpty()){
+				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
+			}
+		}catch(SQLException e){
+			throw new RelatorioException(e);
+		}
+		new RelatorioUtil().runRelatorio("relatorios/Rel_Registro_Status.jasper", dizimistas, param);
 	}
 }

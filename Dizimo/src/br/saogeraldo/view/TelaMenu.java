@@ -178,6 +178,9 @@ public class TelaMenu extends JFrame{
 		JMenuItem relFalecido = new JMenuItem("Falecido");
 		relFalecido.setMnemonic('F');
 		
+		JMenuItem relInativo = new JMenuItem("Inativo");
+		relInativo.setMnemonic('I');
+		
 		relFinanceiro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				reportsFinanceiro();
@@ -206,6 +209,12 @@ public class TelaMenu extends JFrame{
 			}			
 		});
 		
+		relInativo.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				reportsInativo();
+			}			
+		});
+		
 		menuRelatorio.add(relAniversario);
 		menuRelatorio.add(relFinanceiro);
 		menuRelatorio.addSeparator();
@@ -213,6 +222,7 @@ public class TelaMenu extends JFrame{
 		menuRelatorio.add(relRecadastramento);
 		menuRelatorio.addSeparator();
 		menuRelatorio.add(relFalecido);
+		menuRelatorio.add(relInativo);
 		
 		menuBar.add(menuRelatorio);
 				
@@ -272,6 +282,20 @@ public class TelaMenu extends JFrame{
 	private void reportsFalecido() {
 		try{
 			new RelatorioBO().runFalecido();
+		} catch (RegraDeNegocioException e) {
+			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+		} catch (RelatorioException e) {
+			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}catch(Exception ex){
+			logger.error("Erro ao executar o relátorio.",ex);
+			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+		}
+	}
+	
+	private void reportsInativo() {
+		try{
+			new RelatorioBO().runInativo();
 		} catch (RegraDeNegocioException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
 		} catch (RelatorioException e) {

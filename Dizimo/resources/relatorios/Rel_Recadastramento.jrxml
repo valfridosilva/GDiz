@@ -200,18 +200,19 @@
 		</pageFooter>
 		<summary>
 			<band height="35"  isSplitAllowed="true" >
-				<textField isStretchWithOverflow="false" pattern="dd MMMMM yyyy" isBlankWhenNull="false" evaluationTime="Report" hyperlinkType="None"  hyperlinkTarget="Self" >
-					<reportElement
-						x="419"
-						y="10"
-						width="113"
-						height="18"
-						key="textField"/>
-					<box></box>
-					<textElement>
-						<font/>
-					</textElement>
-				<textFieldExpression   class="java.util.Date"><![CDATA[new java.util.Date()]]></textFieldExpression>
+				<textField isStretchWithOverflow="true">
+				    <reportElement
+				        x="0"
+				        y="10"
+				        width="535"
+				        height="18"
+				        key="textField"/>
+				    <textElement textAlignment="Right">
+				        <font/>
+				    </textElement>
+				    <textFieldExpression class="java.lang.String"><![CDATA[
+				        "Gerado em " + new java.text.SimpleDateFormat("dd/MM/yyyy").format(new java.util.Date())
+				    ]]></textFieldExpression>
 				</textField>
 				<staticText>
 					<reportElement

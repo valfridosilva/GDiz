@@ -318,7 +318,7 @@ INSERT INTO DIZIMISTA VALUES(320,'Z\u00e9lia Gon\u00e7alves da Cruz','1961-07-20
 INSERT INTO DIZIMISTA VALUES(321,'Fernanda Gon\u00e7alves Pedroza','1980-09-28','C\u00e9lio de Jesus Pedroza','Rua Senador Herculano Qd.07 Lt.05 St. Aeroporto','(61)3622-3587','2001-12-08',NULL,FALSE,FALSE)
 INSERT INTO DIZIMISTA VALUES(322,'Miriam Noberto de Oliveira','1949-07-23',NULL,'Rua Pd. Rosa Qd.32 Lt.22 St. Aeroporto',NULL,NULL,NULL,FALSE,FALSE)
 INSERT INTO DIZIMISTA VALUES(323,'Gabriela Moreira Saavedra','1947-04-04','Olarico Francisco de Souza','Rua Prof. Artur Roriz N\u00ba 456','(61)3622-8140','1965-07-23',NULL,TRUE,FALSE)
-INSERT INTO DIZIMISTA VALUES(325,'Valfrido Ferreira da Silva','1982-10-21',NULL,'Rua Josu\u00e9 Meireles N\u00ba 49 Centro','(61)3621-4772',NULL,NULL,FALSE,FALSE)
+INSERT INTO DIZIMISTA VALUES(325,'Valfrido Ferreira da Silva','1982-10-21',NULL,'Rua Josu\u00e9 Meireles N\u00ba 49 Centro','(61)3621-4772',NULL,NULL,FALSE,TRUE)
 INSERT INTO DIZIMISTA VALUES(326,'Alex Resende Duarte','1983-11-01',NULL,'Rua Dr. Delgado Qd.27 Lt.20','(61)3622-1082',NULL,NULL,FALSE,FALSE)
 INSERT INTO DIZIMISTA VALUES(327,'Eduardo do Couto Marques','1970-07-06',NULL,'Rua Prof. Artur Roriz Qd.85 Lt.04 Setor Fumal','(61)3622-0426','1995-05-13',72,FALSE,FALSE)
 INSERT INTO DIZIMISTA VALUES(328,'Maria Elisa das Gra\u00e7as','2008-01-01',NULL,'Rua Pd. Bernardo N\u00ba 163 Centro','(61)8426-1853',NULL,NULL,FALSE,FALSE)

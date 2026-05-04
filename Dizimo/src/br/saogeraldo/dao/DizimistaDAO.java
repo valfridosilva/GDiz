@@ -206,7 +206,7 @@ public class DizimistaDAO {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
 		String sql = "SELECT d.iddizimista, d.nome, d.dtCasamento, d.nomeConjuge, d.idConjugeDizimista, c.nome as nomeConjugeDizimista FROM dizimista d left join dizimista c on d.idconjugedizimista = c.iddizimista "+
-				"WHERE d.falecido = false AND inativo = false AND d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
+				"WHERE d.falecido = false AND d.inativo = false AND d.dtCasamento IS NOT NULL AND SUBSTRING(d.dtCasamento,6) BETWEEN ? AND ? ORDER BY SUBSTRING(d.dtCasamento,6)";
 		ps = con.prepareStatement(sql);
 		ps.setString(1, dtInicio);
 		ps.setString(2, dtFim);		
@@ -302,6 +302,27 @@ public class DizimistaDAO {
 		con = FabricaConexao.getConexao();
 		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
 		String sql = "SELECT * FROM dizimista WHERE falecido = true ORDER BY nome";
+		ps = con.prepareStatement(sql);
+		DizimistaVO dz = null;		
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){		
+			dz = new DizimistaVO();	
+			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setNome(rs.getString("nome"));	
+			lista.add(dz);		
+		}
+		ps.close();
+		return lista;
+	}
+	
+	/**
+	 * Recupera todos os dizimistas inativos
+	 * @return
+	 */
+	public List<DizimistaVO> getDizimistaInativosAll() throws SQLException {
+		con = FabricaConexao.getConexao();
+		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
+		String sql = "SELECT * FROM dizimista WHERE inativo = true ORDER BY nome";
 		ps = con.prepareStatement(sql);
 		DizimistaVO dz = null;		
 		ResultSet rs = ps.executeQuery();
