@@ -19,11 +19,23 @@
 	
 	<target name="compile" depends="clean" description="Compila as classes">
         <mkdir dir="${build.dir}"/>
-		<mkdir dir="${dest.dir}/dataBase"/>
-        <javac srcdir="src" destdir="${build.dir}" classpathref="classpath" encoding="ISO-8859-1" source="1.6" target="1.6"/>
+		<mkdir dir="${dest.dir}/dataBase"/>		
+        <javac srcdir="src" destdir="${build.dir}" classpathref="classpath" encoding="ISO-8859-1"/>
 	</target>
 	
-	<target name="build-jar" depends="compile" description="Empacota Dizimo.jar">
+	<target name="compile-reports" depends="compile">
+	    <java classname="br.saogeraldo.util.CompilarRelatorio" fork="true" failonerror="true">
+	        <classpath>
+	            <pathelement path="${build.dir}"/>
+	        	<pathelement path="resources"/>
+	            <fileset dir="${lib.dir}">
+	                <include name="*.jar"/>
+	            </fileset>
+	        </classpath>
+	    </java>
+	</target>
+	
+	<target name="build-jar" depends="compile-reports" description="Empacota Dizimo.jar">
 		<copy todir="${build.dir}">		    
 			<fileset dir="resources">
 		       <include name="*.properties"/>

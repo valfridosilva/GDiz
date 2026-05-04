@@ -19,14 +19,14 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.dao.UsuarioDAO;
 import br.saogeraldo.util.JButtonEnter;
 import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.ValidacaoException;
-
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 public class TelaUsuario extends JInternalFrame {
 

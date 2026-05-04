@@ -17,6 +17,9 @@ import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import br.saogeraldo.negocio.RelatorioBO;
 import br.saogeraldo.util.AnoMes;
 import br.saogeraldo.util.ItemValue;
@@ -25,9 +28,6 @@ import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.RegraDeNegocioException;
 import br.saogeraldo.util.RelatorioException;
 import br.saogeraldo.util.ValidacaoException;
-
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 public class TelaPesquisaPagamento extends JInternalFrame {
 

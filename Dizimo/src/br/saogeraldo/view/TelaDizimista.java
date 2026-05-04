@@ -29,15 +29,15 @@ import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
 
-import br.saogeraldo.bean.DizimistaVO;
-import br.saogeraldo.dao.DizimistaDAO;
-import br.saogeraldo.util.Util;
-import br.saogeraldo.util.JButtonEnter;
-import br.saogeraldo.util.Mensagem;
-import br.saogeraldo.util.ValidacaoException;
-
 import com.jgoodies.forms.layout.CellConstraints;
 import com.jgoodies.forms.layout.FormLayout;
+
+import br.saogeraldo.bean.DizimistaVO;
+import br.saogeraldo.dao.DizimistaDAO;
+import br.saogeraldo.util.JButtonEnter;
+import br.saogeraldo.util.Mensagem;
+import br.saogeraldo.util.Util;
+import br.saogeraldo.util.ValidacaoException;
 
 public class TelaDizimista extends JInternalFrame implements TelaListagem {
 

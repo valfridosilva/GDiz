@@ -31,6 +31,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 
 import org.apache.log4j.Logger;
 
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
+
 import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.bean.FinanceiroVO;
 import br.saogeraldo.dao.DizimistaDAO;
@@ -43,9 +46,6 @@ import br.saogeraldo.util.ModeloTabela;
 import br.saogeraldo.util.TextFieldMoedaReal;
 import br.saogeraldo.util.Util;
 import br.saogeraldo.util.ValidacaoException;
-
-import com.jgoodies.forms.layout.CellConstraints;
-import com.jgoodies.forms.layout.FormLayout;
 
 public class TelaFinanceiro extends JInternalFrame implements TelaListagem{
 

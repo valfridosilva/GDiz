@@ -26,9 +26,9 @@ import javax.swing.table.DefaultTableCellRenderer;
 import javax.swing.table.TableColumnModel;
 
 import br.saogeraldo.bean.DizimistaVO;
-import br.saogeraldo.util.Util;
 import br.saogeraldo.util.Mensagem;
 import br.saogeraldo.util.ModeloTabela;
+import br.saogeraldo.util.Util;
 
 public class TelaListagemDizimista extends JInternalFrame {
 
