@@ -14,6 +14,7 @@ import javax.swing.JInternalFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
+import javax.swing.SwingUtilities;
 import javax.swing.text.MaskFormatter;
 
 import org.apache.log4j.Logger;
@@ -38,7 +39,9 @@ public class TelaPesquisa extends JInternalFrame {
 	private JLabel rotuloDataInicial;
 	private JLabel rotuloDataFinal;
 	private JButton botaoPesquisar;	
+	private JButton botaoCancelar;	
 	private TipoPesquisa tipoPesquisa;
+	private LoadingFrame loadingFrame;
 	private static Logger logger = Logger.getLogger(TelaPesquisa.class);
 	
 	public TelaPesquisa(TelaMenu telaMenu, TipoPesquisa tipoPesquisa) {
@@ -67,6 +70,8 @@ public class TelaPesquisa extends JInternalFrame {
 		campoDataFinal = new JFormattedTextField(formatData);
 		campoDataFinal.setFocusLostBehavior(JFormattedTextField.COMMIT);
 		botaoPesquisar = new JButtonEnter("Gerar Relatório");
+		botaoCancelar = new JButtonEnter("Cancelar");
+		loadingFrame = new LoadingFrame();
 		
 		campoDataInicial.setPreferredSize(new Dimension(70, 22));
 		campoDataFinal.setPreferredSize(new Dimension(70, 22));
@@ -78,6 +83,7 @@ public class TelaPesquisa extends JInternalFrame {
 		JPanel painelBotao = new JPanel();
 
 		painelBotao.add(botaoPesquisar);
+		painelBotao.add(botaoCancelar);
 
 		super.add(painelBotao);
 		
@@ -88,14 +94,23 @@ public class TelaPesquisa extends JInternalFrame {
 		
 		FormLayout formlayout = new FormLayout(
 				"2dlu, 20px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 90px, 2dlu, 70px, 2dlu, 70px, 2dlu",
-				"2dlu, 10px, 5dlu, pref, 5dlu, 10px, 5dlu");
-		JPanel jpanel = new JPanel(formlayout);		
-		jpanel.setBorder(BorderFactory.createTitledBorder("Pesquisa "));
+				"2dlu, 10px, 5dlu, pref, 5dlu, 10px, 5dlu, 10px, 5dlu");
+		JPanel jpanel = new JPanel(formlayout);	
+		jpanel.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createEmptyBorder(40, 10, 20, 10), // top, left, bottom, right
+		        BorderFactory.createTitledBorder("Pesquisa ")
+		    ));
 		CellConstraints cellconstraints = new CellConstraints();		
 		
 		botaoPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				pesquisar();
+			}
+		});
+		
+		botaoCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				fechar();
 			}
 		});
 				
@@ -106,8 +121,13 @@ public class TelaPesquisa extends JInternalFrame {
 		jpanel.add(campoDataFinal, cellconstraints.xy(12, 4));	
 		
 		jpanel.add(botaoPesquisar, cellconstraints.xy(4, 6));
-	
+		jpanel.add(botaoCancelar, cellconstraints.xy(6, 6));
+		
 		return jpanel;
+	}
+	
+	private void fechar() {
+	    this.dispose();
 	}
 	
 	public void restaura() {
@@ -152,26 +172,44 @@ public class TelaPesquisa extends JInternalFrame {
 		}
 	}
 
-	private void pesquisar() {					
+	private void pesquisar() {	
+        
 		try {				
 			valida();
-			RelatorioBO relatorio = new RelatorioBO();
-			if(TipoPesquisa.ANIVERSARIO.equals(tipoPesquisa)){
-				relatorio.runAniversario(campoDataInicial.getText(), campoDataFinal.getText());
-			}
-			else if(TipoPesquisa.CASAMENTO.equals(tipoPesquisa)){
-				relatorio.runCasamento(campoDataInicial.getText(), campoDataFinal.getText());
-			}
+			loadingFrame.showLoading();
+	        new Thread(new Runnable() {
+	            @Override
+	            public void run() {
+	                try {
+	                	if(TipoPesquisa.ANIVERSARIO.equals(tipoPesquisa)){
+	                		new RelatorioBO().runAniversario(campoDataInicial.getText(), campoDataFinal.getText());
+	        			}
+	        			else if(TipoPesquisa.CASAMENTO.equals(tipoPesquisa)){
+	        				new RelatorioBO().runCasamento(campoDataInicial.getText(), campoDataFinal.getText());
+	        			}
+	                } catch (RegraDeNegocioException e) {
+	        			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+	        		} catch (RelatorioException e) {
+	        			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+	        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+	        		} catch (Exception e) {
+	        			logger.error(Mensagem.ERRO_SISTEMA, e);
+	        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+	                } finally {
+	                    SwingUtilities.invokeLater(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                        	loadingFrame.closeLoading();
+	                        }
+	                    });
+	                }
+	            }
+
+	        }).start();
+			
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RegraDeNegocioException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RelatorioException e) {
-			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		} catch (Exception e) {
-			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}		
+		} 
 	}
+	
 }

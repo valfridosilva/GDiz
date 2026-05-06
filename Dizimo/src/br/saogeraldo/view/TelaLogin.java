@@ -11,10 +11,14 @@ import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
+import javax.swing.JPanel;
 import javax.swing.JPasswordField;
 import javax.swing.JTextField;
 
 import org.apache.log4j.Logger;
+
+import com.jgoodies.forms.layout.CellConstraints;
+import com.jgoodies.forms.layout.FormLayout;
 
 import br.saogeraldo.bean.UsuarioVO;
 import br.saogeraldo.dao.UsuarioDAO;
@@ -39,13 +43,11 @@ public class TelaLogin extends JFrame {
 	public TelaLogin() {
 		super("Sistema Dizimista");
 		inicializa();
-	}
-
-	private void inicializa() {
+		
 		rotulo = new JLabel("Entre com os dados abaixo para acessar o sistema", JLabel.CENTER);
 		rotuloUsuario = new JLabel("Usuário:", JLabel.CENTER);
 		rotuloUsuario.setToolTipText("Usuário");
-		rotuloSenha = new JLabel("    Senha:", JLabel.CENTER);
+		rotuloSenha = new JLabel("Senha:", JLabel.CENTER);
 		rotuloSenha.setToolTipText("Senha");
 		campoSenha = new JPasswordField(20);
 		campoUsuario = new JTextField(20);
@@ -53,19 +55,38 @@ public class TelaLogin extends JFrame {
 		botaoSair = new JButtonEnter("Sair");
 
 		setResizable(false);
-		setSize(340, 150);
+		setSize(380, 200);
 		setLayout(new FlowLayout());
 		setLocationRelativeTo(null);
 		
 		getRootPane().setDefaultButton(botaoLogar);
 		
-		add(rotulo);
-		add(rotuloUsuario);
-		add(campoUsuario);
-		add(rotuloSenha);
-		add(campoSenha);
-		add(botaoLogar);
-		add(botaoSair);
+		JPanel painel = getPanelForm();
+
+		super.add(painel);
+
+		JPanel painelBotao = new JPanel();
+
+		painelBotao.add(botaoLogar);
+		painelBotao.add(botaoSair);
+
+		super.add(painelBotao);
+		
+	}
+
+	private void inicializa() {
+		
+
+	}
+	
+	public JPanel getPanelForm() {
+		
+		FormLayout formlayout = new FormLayout(
+			    "right:pref, 8dlu, 250px",
+			    "pref, 5dlu, pref, 5dlu, pref, 10dlu, pref"
+			);
+		JPanel jpanel = new JPanel(formlayout);		
+		CellConstraints cellconstraints = new CellConstraints();		
 
 		botaoLogar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -83,6 +104,20 @@ public class TelaLogin extends JFrame {
 				sair();
 			}
 		});
+				
+		jpanel.add(rotulo, cellconstraints.xywh(1, 1, 3, 1));
+
+		jpanel.add(rotuloUsuario, cellconstraints.xy(1, 3));
+		jpanel.add(campoUsuario, cellconstraints.xy(3, 3));
+
+		jpanel.add(rotuloSenha, cellconstraints.xy(1, 5));
+		jpanel.add(campoSenha, cellconstraints.xy(3, 5));
+
+		jpanel.add(botaoLogar, cellconstraints.xy(1, 7));
+		jpanel.add(botaoSair, cellconstraints.xy(3, 7));
+		
+	
+		return jpanel;
 	}
 
 	private void sair() {

@@ -52,19 +52,6 @@ public class RelatorioBO{
 		new RelatorioUtil().runRelatorio("relatorios/Rel_Casamento.jasper", dizimistas, param);
 	}
 	
-	public void runAniversarioAll() throws RegraDeNegocioException, RelatorioException {
-		try {
-			dizimistas = new DizimistaDAO().getDizimistaAll();
-			if (dizimistas.isEmpty()) {
-				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
-			}
-		} catch (SQLException e) {
-			throw new RelatorioException(e);
-		}
-		param = new HashMap<String, String>();
-		param.put("title", "Todos");
-		new RelatorioUtil().runRelatorio("relatorios/Rel_Aniversario.jasper", dizimistas, param);
-	}
 	
 	public void runFinanceiro(AnoMes anoMes) throws RegraDeNegocioException, RelatorioException {
 		try {
@@ -86,7 +73,7 @@ public class RelatorioBO{
 	public void runRecadastramento()throws RegraDeNegocioException, RelatorioException{
 		param = new HashMap<String, String>();		
 		try{
-			dizimistas = new DizimistaDAO().getDizimistaAll();
+			dizimistas = new DizimistaDAO().getDizimistaBySituacao(Boolean.FALSE, Boolean.FALSE);
 			if(dizimistas.isEmpty()){
 				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 			}
@@ -96,11 +83,11 @@ public class RelatorioBO{
 		new RelatorioUtil().runRelatorio("relatorios/Rel_Recadastramento.jasper", dizimistas, param);
 	}
 	
-	public void runFalecido()throws RegraDeNegocioException, RelatorioException{
+	public void runSituacao(Boolean inativo, Boolean falecido)throws RegraDeNegocioException, RelatorioException{
 		param = new HashMap<String, String>();	
-		param.put("TITULO_RELATORIO", "Relatório de Falecidos");
+		param.put("TITULO_RELATORIO", "Relatório de Dizimistas "+(inativo?"Inativos":"Ativos")+(falecido?" - Falecidos":""));
 		try{
-			dizimistas = new DizimistaDAO().getDizimistaFalecidoAll();
+			dizimistas = new DizimistaDAO().getDizimistaBySituacao(inativo, falecido);
 			if(dizimistas.isEmpty()){
 				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
 			}
@@ -110,17 +97,4 @@ public class RelatorioBO{
 		new RelatorioUtil().runRelatorio("relatorios/Rel_Registro_Status.jasper", dizimistas, param);
 	}
 	
-	public void runInativo()throws RegraDeNegocioException, RelatorioException{
-		param = new HashMap<String, String>();	
-		param.put("TITULO_RELATORIO", "Relatório de Inativos");
-		try{
-			dizimistas = new DizimistaDAO().getDizimistaInativosAll();
-			if(dizimistas.isEmpty()){
-				throw new RegraDeNegocioException(Mensagem.NENHUM_REGISTRO);
-			}
-		}catch(SQLException e){
-			throw new RelatorioException(e);
-		}
-		new RelatorioUtil().runRelatorio("relatorios/Rel_Registro_Status.jasper", dizimistas, param);
-	}
 }

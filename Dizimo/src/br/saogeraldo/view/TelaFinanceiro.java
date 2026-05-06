@@ -171,7 +171,11 @@ public class TelaFinanceiro extends JInternalFrame implements TelaListagem{
 				"2dlu, pref, 2dlu, 130px, 2dlu, pref, 2dlu, 40px, 2dlu, pref, 2dlu, 50px, 2dlu, 70px, 2dlu, 40px, 2dlu, 90px, 2dlu",
 				"2dlu, pref, 2dlu, pref, 2dlu, pref, 5dlu, pref, 2dlu");
 		JPanel jpanel = new JPanel(formlayout);		
-		jpanel.setBorder(BorderFactory.createTitledBorder("Dados "));
+		
+		jpanel.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createEmptyBorder(40, 10, 20, 10), // top, left, bottom, right
+		        BorderFactory.createTitledBorder("Dados ")
+		    ));
 		
 		CellConstraints cellconstraints = new CellConstraints();		
 		campoCodigo.addKeyListener( new SomenteNum());		

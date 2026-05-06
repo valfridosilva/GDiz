@@ -7,7 +7,6 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
-
 import br.saogeraldo.bean.DizimistaVO;
 import br.saogeraldo.util.FabricaConexao;
 
@@ -240,7 +239,7 @@ public class DizimistaDAO {
 	}
 	
 	/**
-	 * Lista todos os dizimistas cadastrados
+	 * Lista todos os dizimistas 
 	 * @return List
 	 * @throws SQLException
 	 */
@@ -274,12 +273,40 @@ public class DizimistaDAO {
 		return todos;		
 		
 	}
-/**
- * Verifica se já existe algum Dizimista cadastrado com este código
- * @param codigo
- * @return boolean
- * @throws SQLException
- */
+	
+	/**
+	 * 
+	 * @return List<DizimistaVO>
+	 * @throws SQLException
+	 */
+	
+	public List<DizimistaVO> getDizimistaBySituacao(Boolean inativo, Boolean falecido) throws SQLException {
+		con = FabricaConexao.getConexao();
+		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
+		String sql = "SELECT d.idDizimista, d.nome, d.endereco, d.telefone FROM dizimista d WHERE d.inativo = ? AND d.falecido = ? ORDER BY d.nome";
+		ps = con.prepareStatement(sql);
+		ps.setBoolean(1, inativo);
+		ps.setBoolean(2, falecido);
+		DizimistaVO dz = null;		
+		ResultSet rs = ps.executeQuery();
+		while(rs.next()){		
+			dz = new DizimistaVO();	
+			dz.setIdDizimista(rs.getInt("idDizimista"));
+			dz.setNome(rs.getString("nome"));	
+			dz.setEndereco(rs.getString("endereco"));
+			dz.setTelefone(rs.getString("telefone"));
+			lista.add(dz);		
+		}
+		ps.close();
+		return lista;
+	}
+	
+	/**
+	 * Verifica se já existe algum Dizimista cadastrado com este código
+	 * @param codigo
+	 * @return boolean
+	 * @throws SQLException
+	 */
 	public boolean existeCodigo(int codigo) throws SQLException {
 		boolean status = false;
 		con = FabricaConexao.getConexao();
@@ -294,46 +321,8 @@ public class DizimistaDAO {
 		ps.close();
 		return status;
 	}
-	/**
-	 * Recupera todos os dizimistas falecidos
-	 * @return
-	 */
-	public List<DizimistaVO> getDizimistaFalecidoAll() throws SQLException {
-		con = FabricaConexao.getConexao();
-		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT * FROM dizimista WHERE falecido = true ORDER BY nome";
-		ps = con.prepareStatement(sql);
-		DizimistaVO dz = null;		
-		ResultSet rs = ps.executeQuery();
-		while(rs.next()){		
-			dz = new DizimistaVO();	
-			dz.setIdDizimista(rs.getInt("idDizimista"));
-			dz.setNome(rs.getString("nome"));	
-			lista.add(dz);		
-		}
-		ps.close();
-		return lista;
-	}
 	
-	/**
-	 * Recupera todos os dizimistas inativos
-	 * @return
-	 */
-	public List<DizimistaVO> getDizimistaInativosAll() throws SQLException {
-		con = FabricaConexao.getConexao();
-		List<DizimistaVO> lista = new ArrayList<DizimistaVO>();
-		String sql = "SELECT * FROM dizimista WHERE inativo = true ORDER BY nome";
-		ps = con.prepareStatement(sql);
-		DizimistaVO dz = null;		
-		ResultSet rs = ps.executeQuery();
-		while(rs.next()){		
-			dz = new DizimistaVO();	
-			dz.setIdDizimista(rs.getInt("idDizimista"));
-			dz.setNome(rs.getString("nome"));	
-			lista.add(dz);		
-		}
-		ps.close();
-		return lista;
-	}
+	
+
 
 }

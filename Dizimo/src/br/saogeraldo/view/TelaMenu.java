@@ -21,6 +21,7 @@ import javax.swing.JMenu;
 import javax.swing.JMenuBar;
 import javax.swing.JMenuItem;
 import javax.swing.JOptionPane;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -42,13 +43,15 @@ public class TelaMenu extends JFrame{
 	private Image logo;
 	private TelaPesquisa telaPesquisaAniversario;
 	private TelaPesquisa telaPesquisaCasamento;
+	private TelaSituacao telaSituacao;
 	private TelaPesquisaPagamento telaPesquisaPagamento;
 	private TelaDizimista telaDizimista;
 	private TelaFinanceiro telaFinanceiro;
 	private TelaUsuario telaUsuario;
+	private LoadingFrame loadingFrame;
 	private ArquivoBO arquivoBO;
 	private DizimistaDAO dizimistaDAO;
-	public final Integer ESPACO_ENTRE_JANELA = 85;
+	public final Integer ESPACO_ENTRE_JANELA = 50;
 	private static Logger logger = Logger.getLogger(TelaMenu.class);
 	 
 	//método construtor  
@@ -175,11 +178,9 @@ public class TelaMenu extends JFrame{
 		JMenuItem relRecadastramento = new JMenuItem("Recadastramento");
 		relRecadastramento.setMnemonic('R');
 		
-		JMenuItem relFalecido = new JMenuItem("Falecido");
-		relFalecido.setMnemonic('F');
+		JMenuItem relSituacao = new JMenuItem("Situação");
+		relSituacao.setMnemonic('S');
 		
-		JMenuItem relInativo = new JMenuItem("Inativo");
-		relInativo.setMnemonic('I');
 		
 		relFinanceiro.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
@@ -203,26 +204,22 @@ public class TelaMenu extends JFrame{
 			}			
 		});
 		
-		relFalecido.addActionListener(new ActionListener() {
+		
+		relSituacao.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
-				reportsFalecido();
+				reportsSituacao();
 			}			
 		});
 		
-		relInativo.addActionListener(new ActionListener() {
-			public void actionPerformed(ActionEvent evt) {
-				reportsInativo();
-			}			
-		});
+		loadingFrame = new LoadingFrame();		
 		
 		menuRelatorio.add(relAniversario);
-		menuRelatorio.add(relFinanceiro);
-		menuRelatorio.addSeparator();
 		menuRelatorio.add(relCasamento);
+		menuRelatorio.addSeparator();
+		menuRelatorio.add(relFinanceiro);
 		menuRelatorio.add(relRecadastramento);
 		menuRelatorio.addSeparator();
-		menuRelatorio.add(relFalecido);
-		menuRelatorio.add(relInativo);
+		menuRelatorio.add(relSituacao);
 		
 		menuBar.add(menuRelatorio);
 				
@@ -266,45 +263,45 @@ public class TelaMenu extends JFrame{
 	}
 	
 	private void reportsRecadastramento() {
-		try{
-			new RelatorioBO().runRecadastramento();
-		} catch (RegraDeNegocioException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RelatorioException e) {
-			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}catch(Exception ex){
-			logger.error("Erro ao executar o relátorio.",ex);
-			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}
+		
+		loadingFrame.showLoading();
+        new Thread(new Runnable() {
+            @Override
+            public void run() {
+                try {
+                	new RelatorioBO().runRecadastramento();
+                } catch (RegraDeNegocioException e) {
+        			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+        		} catch (RelatorioException e) {
+        			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+        		} catch (Exception ex) {
+        			logger.error(ex.getMessage(), ex);
+        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+                } finally {
+                    SwingUtilities.invokeLater(new Runnable() {
+                        @Override
+                        public void run() {
+                        	loadingFrame.closeLoading();
+                        }
+                    });
+                }
+            }
+
+        }).start();
+		
 	}
 	
-	private void reportsFalecido() {
-		try{
-			new RelatorioBO().runFalecido();
-		} catch (RegraDeNegocioException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RelatorioException e) {
-			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}catch(Exception ex){
-			logger.error("Erro ao executar o relátorio.",ex);
-			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+	private void reportsSituacao() {
+		if (telaSituacao == null || telaSituacao.isClosed()) {
+			telaSituacao = new TelaSituacao(this);
 		}
-	}
-	
-	private void reportsInativo() {
-		try{
-			new RelatorioBO().runInativo();
-		} catch (RegraDeNegocioException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RelatorioException e) {
-			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}catch(Exception ex){
-			logger.error("Erro ao executar o relátorio.",ex);
-			JOptionPane.showMessageDialog(this, ex.getMessage(), Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}
+		telaSituacao.restaura();
+		// Bounds(Left, Top, Right e Bottom)
+		telaSituacao.setBounds(ESPACO_ENTRE_JANELA / 2, (int) (ESPACO_ENTRE_JANELA / 2), this.desktop.getWidth() - ESPACO_ENTRE_JANELA, this.desktop
+				.getHeight() - (int)(ESPACO_ENTRE_JANELA * 3.3));
+
+		desktop.moveToFront(telaSituacao);
 	}
 	
 	private void reportsCasamento() {
@@ -515,7 +512,7 @@ class BackgroundedDesktopPane extends JDesktopPane {
 	public void paintComponent(Graphics g) {
 		super.paintComponent(g);
 		if (img != null){
-			g.drawImage(img, 100, 50, 500, 300, this);
+			g.drawImage(img, 50, 50, 650, 400, this);
 		}else{
 			g.drawString("Logo não encontrada", 50, 50);
 		}

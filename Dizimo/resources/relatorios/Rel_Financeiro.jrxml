@@ -38,7 +38,7 @@
 					<reportElement
 						x="176"
 						y="5"
-						width="143"
+						width="250"
 						height="23"
 						key="staticText-1"/>
 					<box></box>

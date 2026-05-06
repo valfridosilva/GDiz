@@ -14,6 +14,7 @@ import javax.swing.JLabel;
 import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
 
 import org.apache.log4j.Logger;
 
@@ -37,6 +38,8 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 	private JLabel rotuloAno;
 	private JLabel rotuloMes;
 	private JButton botaoPesquisar;	
+	private JButton botaoCancelar;	
+	private LoadingFrame loadingFrame;
 	private static Logger logger = Logger.getLogger(TelaPesquisaPagamento.class);
 	
 	public TelaPesquisaPagamento(TelaMenu telaMenu) {
@@ -58,6 +61,9 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 		initAnoMes();
 		
 		botaoPesquisar = new JButtonEnter("Gerar Relatório");
+		botaoCancelar = new JButtonEnter("Cancelar");
+		
+		loadingFrame = new LoadingFrame();
 		
 		JPanel painel = getPanelForm();
 
@@ -66,6 +72,7 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 		JPanel painelBotao = new JPanel();
 
 		painelBotao.add(botaoPesquisar);
+		painelBotao.add(botaoCancelar);
 
 		super.add(painelBotao);
 		
@@ -77,12 +84,21 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 				"2dlu, 40px, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, pref, 2dlu, 110px, 2dlu, 130px, 2dlu, 110px, 2dlu",
 				"2dlu, 10px, 5dlu, pref, 5dlu, 10px, 5dlu");
 		JPanel jpanel = new JPanel(formlayout);		
-		jpanel.setBorder(BorderFactory.createTitledBorder("Pesquisa "));
+		jpanel.setBorder(BorderFactory.createCompoundBorder(
+		        BorderFactory.createEmptyBorder(40, 0, 20, 0), // top, left, bottom, right
+		        BorderFactory.createTitledBorder("Pesquisa ")
+		    ));
 		CellConstraints cellconstraints = new CellConstraints();		
 		
 		botaoPesquisar.addActionListener(new ActionListener() {
 			public void actionPerformed(ActionEvent evt) {
 				pesquisar();
+			}
+		});
+		
+		botaoCancelar.addActionListener(new ActionListener() {
+			public void actionPerformed(ActionEvent evt) {
+				fechar();
 			}
 		});
 				
@@ -93,8 +109,13 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 		jpanel.add(campoAno, cellconstraints.xy(14, 4));	
 		
 		jpanel.add(botaoPesquisar, cellconstraints.xy(4, 6));
+		jpanel.add(botaoCancelar, cellconstraints.xy(6, 6));
 	
 		return jpanel;
+	}
+	
+	private void fechar() {
+	    this.dispose();
 	}
 	
 	public void restaura() {
@@ -119,21 +140,38 @@ public class TelaPesquisaPagamento extends JInternalFrame {
 		campoAno.setText(String.valueOf(Calendar.getInstance().get(Calendar.YEAR)));
 	}
 
-	private void pesquisar() {					
+	private void pesquisar() {	
 		try {				
 			valida();
-			RelatorioBO relatorio = new RelatorioBO();
-			relatorio.runFinanceiro(new AnoMes(Integer.parseInt(campoAno.getText()+((ItemValue)comboMes.getSelectedItem()).getKey())));
+			loadingFrame.showLoading();
+	        new Thread(new Runnable() {
+	            @Override
+	            public void run() {
+	                try {
+	                	new RelatorioBO().runFinanceiro(new AnoMes(Integer.parseInt(campoAno.getText()+((ItemValue)comboMes.getSelectedItem()).getKey())));
+	                } catch (RegraDeNegocioException e) {
+	        			JOptionPane.showMessageDialog(null, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
+	        		} catch (RelatorioException e) {
+	        			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
+	        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+	        		} catch (Exception e) {
+	        			logger.error(Mensagem.ERRO_SISTEMA, e);
+	        			JOptionPane.showMessageDialog(null, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
+	                } finally {
+	                    SwingUtilities.invokeLater(new Runnable() {
+	                        @Override
+	                        public void run() {
+	                        	loadingFrame.closeLoading();
+	                        }
+	                    });
+	                }
+	            }
+
+	        }).start();
+			
 		} catch (ValidacaoException e) {
 			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RegraDeNegocioException e) {
-			JOptionPane.showMessageDialog(this, e.getMessage(), Mensagem.ALERTA, JOptionPane.WARNING_MESSAGE);
-		} catch (RelatorioException e) {
-			logger.error(Mensagem.ERRO_GERACAO_RELATORIO, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_GERACAO_RELATORIO, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		} catch (Exception e) {
-			logger.error(Mensagem.ERRO_SISTEMA, e);
-			JOptionPane.showMessageDialog(this, Mensagem.ERRO_SISTEMA, Mensagem.ERRO, JOptionPane.ERROR_MESSAGE);
-		}		
+		} 
 	}
+		
 }

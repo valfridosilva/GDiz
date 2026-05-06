@@ -1,6 +1,9 @@
 eclipse.preferences.version=1
 encoding//resources/relatorios/Rel_Aniversario.jrxml=UTF-8
 encoding//resources/relatorios/Rel_Casamento.jrxml=UTF-8
+encoding//resources/relatorios/Rel_Financeiro.jrxml=UTF-8
+encoding//resources/relatorios/Rel_Recadastramento.jrxml=UTF-8
+encoding//resources/relatorios/Rel_Registro_Status.jrxml=UTF-8
 encoding//src/br/saogeraldo/util/CompilarRelatorio.java=UTF-8
 encoding//src/br/saogeraldo/view/TelaDizimista.java=ISO-8859-1
 encoding/<project>=ISO-8859-1
